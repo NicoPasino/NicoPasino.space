@@ -7,9 +7,9 @@
    "MinimumProductVersion": "2.6.1166",
    "ModelNamespace": null,
    "OutputContextPath": null,
-   "OutputPath": "Modelos",
+   "OutputPath": "Modelos\/Movies",
    "PreserveCasingWithRegex": true,
-   "ProjectRootNamespace": "",
+   "ProjectRootNamespace": "NicoPasino.Core",
    "Schemas": null,
    "SelectedHandlebarsLanguage": 2,
    "SelectedToBeGenerated": 2,
@@ -24,7 +24,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[movie_genres]",
+         "Name": "[dbo].[movieGenres]",
          "ObjectType": 0
       }
    ],
@@ -34,7 +34,7 @@
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,
    "UseDatabaseNamesForRoutines": true,
-   "UseDateOnlyTimeOnly": true,
+   "UseDateOnlyTimeOnly": false,
    "UseDbContextSplitting": false,
    "UseDecimalDataAnnotationForSprocResult": true,
    "UseFluentApiOnly": true,

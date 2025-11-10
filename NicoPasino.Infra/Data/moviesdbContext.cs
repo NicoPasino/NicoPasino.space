@@ -3,8 +3,9 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using NicoPasino.Core.Modelos.Movies;
 
-using NicoPasino.Core.Modelos;
+namespace NicoPasino.Infra.Data;
 
 public partial class moviesdbContext : DbContext
 {
@@ -36,12 +37,23 @@ public partial class moviesdbContext : DbContext
             entity.ToTable("movie");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.IdPublica).HasColumnName("idPublica");
+            entity.Property(e => e.Activo)
+                .HasDefaultValue(true)
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_movie_activo")
+                .HasColumnName("activo");
             entity.Property(e => e.Director)
                 .IsRequired()
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("director");
             entity.Property(e => e.Duration).HasColumnName("duration");
+            entity.Property(e => e.FechaCreacion)
+                .HasColumnType("datetime")
+                .HasColumnName("fechaCreacion");
+            entity.Property(e => e.FechaModificacion)
+                .HasColumnType("datetime")
+                .HasColumnName("fechaModificacion");
             entity.Property(e => e.Poster)
                 .HasColumnType("text")
                 .HasColumnName("poster");
@@ -69,9 +81,9 @@ public partial class moviesdbContext : DbContext
                     j =>
                     {
                         j.HasKey("MovieId", "GenreId").HasName("PK__movie_ge__B249DF9D6711EEA6");
-                        j.ToTable("movie_genres");
-                        j.IndexerProperty<int>("MovieId").HasColumnName("movie_id");
-                        j.IndexerProperty<int>("GenreId").HasColumnName("genre_id");
+                        j.ToTable("movieGenres");
+                        j.IndexerProperty<int>("MovieId").HasColumnName("movieId");
+                        j.IndexerProperty<int>("GenreId").HasColumnName("genreId");
                     });
         });
 

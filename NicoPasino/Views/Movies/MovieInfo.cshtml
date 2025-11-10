@@ -1,0 +1,30 @@
+﻿@model NicoPasino.Core.DTO.Movies.MovieDto
+@{
+    ViewData["Title"] = Model.title;
+}
+
+<movie>
+    <div id="movie">
+        <h1 id="title">@Model.title</h1>
+        <div class="cont">
+            <img id="poster" src="@Model.poster" alt="poster de @Model.title">
+            <br><br>
+            <div class="info">
+                <div class="infoTextos">
+                    <span id="director"> <b>Director</b>: @Model.director.</span><br>
+                    <span id="year"> <b>Año</b>: @Model.year.</span><br>
+                    <span id="duration"> <b>Duración</b>: @Model.duration.</span><br>
+                    <span id="rate"> <b>Calificación</b>: @Model.rate⭐.</span><br>
+                    <span> <b>Géneros</b>: @(Model.genreNames != null && Model.genreNames.Any() ? string.Join(" / ", Model.genreNames) : "—") </span><br> <br>
+                </div>
+
+                <div class="botonesInfo">
+                    <a asp-action="Modificar" asp-route-id="@Model.idPublica" class="btn btn-primary">Modificar</a>
+                    <a asp-action="Eliminar" asp-route-id="@Model.idPublica" class="btn btn-danger">Eliminar</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="statusUpdate"></div>
+    </div>
+</movie>

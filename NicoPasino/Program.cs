@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using NicoPasino.Core.Interfaces;
 using NicoPasino.Core.Repositorio.Movies;
+using NicoPasino.Infra.Data;
 using NicoPasino.Servicios.Servicios.Movies;
 
 namespace NicoPasino
@@ -12,12 +14,12 @@ namespace NicoPasino
 
             // conexion
             builder.Services.AddDbContext<moviesdbContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("MiConnectionString"))
+            options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesConnectionString"))
             );
 
             // permitir inyeccion
             builder.Services.AddScoped<IMovieServicio, MovieServicio>();
-            builder.Services.AddScoped<IMoviesRepo, MoviesRepo>();
+            builder.Services.AddScoped<IMovieRepo, MoviesRepo>();
 
             var app = builder.Build();
 
@@ -35,7 +37,7 @@ namespace NicoPasino
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
+                pattern: "{controller=Movies}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
             app.Run();

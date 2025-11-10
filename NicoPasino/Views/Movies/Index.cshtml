@@ -1,0 +1,43 @@
+﻿@using NicoPasino.Core.DTO.Movies
+@model IEnumerable<NicoPasino.Core.DTO.Movies.MovieDto>
+@{
+    ViewData["Title"] = "Peliculas";
+    var generos = ViewData["Generos"];
+}
+
+@* @if (ViewBag.mensaje = "")
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        ✅ La película <font class="alert-link">@ViewBag.mensaje.nombre</font> se @ViewBag.mensaje.tipo correctamente.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+} *@
+
+
+@* @if (generos != null) {
+    foreach (var genero in generos) {
+        <a asp-action="Genero" asp-route-id="@genero.Id" class="btn btn btn-primary">@genero.Nombre</a>
+    }
+} *@
+
+<section class="col-12 col-xl-9">
+    @foreach (var movie in Model) {
+        <article class="card position-relative">
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"> @movie.rate </span>
+            <a class="poster" asp-action="MovieInfo" asp-route-id="@movie.idPublica">
+                <img src="@movie.poster" class="card-img-top" alt="@movie.title">
+            </a>
+            <div class="card-body">
+                <div class="title">
+                    <h5>@movie.title <font class="small">@movie.year</font></h5>
+                </div>
+
+                <div class="flexCard">
+                    @if (movie.genreNames != null && movie.genreNames.Any()) {
+                        <font class="small">@string.Join(" / ", movie.genreNames).</font>
+                    }
+                </div>
+            </div>
+        </article>
+    }
+</section>

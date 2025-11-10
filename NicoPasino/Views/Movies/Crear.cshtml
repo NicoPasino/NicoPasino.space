@@ -1,0 +1,65 @@
+﻿@using NicoPasino.Core.DTO.Movies;
+@model NicoPasino.Core.DTO.Movies.MovieDto
+@{
+    ViewData["Title"] = "Nueva pelicula";
+}
+
+<h1 class="mb-3">Nueva pelicula</h1>
+<div id="create">
+    <form id="formularioCreate" method="post" class="row g-3" novalidate enctype="multipart/form-data">
+        <!-- class= "needs-validation" -->
+        <div class="col-sm-5 col-md-5">
+            <label asp-for="title" class="form-label">Titulo</label>
+            <input asp-for="title" class="form-control" />
+            <span asp-validation-for="title" class="text-danger"></span>
+        </div>
+        <div class="col-sm-5 col-md-5">
+            <label asp-for="director" class="form-label">Director</label>
+            <input asp-for="director" class="form-control" />
+            <span asp-validation-for="director" class="text-danger"></span>
+        </div>
+        <div class="col-sm-10 col-md-10">
+            <label asp-for="poster" class="form-label">Poster url</label>
+            <input asp-for="poster" class="form-control" />
+            <span asp-validation-for="poster" class="text-danger"></span>
+        </div>
+
+        @* <div class="col-12">
+            <label class="form-label">Imagen principal</label>
+            <input type="file" name="imagen" class="form-control" />
+        </div> *@
+
+        <div class="ADCG">
+            <!-- Año - Duración - Calificación - Géneros -->
+            <div class="ADC col-12 col-md-6">
+                <div class="col-sm-6 col-xl-6 mx-auto">
+                    <label asp-for="year" class="form-label">Año</label>
+                    <input asp-for="year" inputmode="numeric" class="form-control" step="1" min="1900" max="2050" />
+                    <span asp-validation-for="year" class="text-danger"></span>
+                </div> <br>
+                <div class="col-sm-6 col-xl-6 mx-auto">
+                    <label asp-for="duration" class="form-label">Duración</label>
+                    <input asp-for="duration" inputmode="numeric" class="form-control" step="1" min="30" max="300" />
+                    <span asp-validation-for="duration" class="text-danger"></span>
+                </div> <br>
+                <div class="col-sm-6 col-xl-6 mx-auto">
+                    <label asp-for="rate" class="form-label">Calificación</label>
+                    <input asp-for="rate" inputmode="numeric" class="form-control" step="0.1" min="0" max="10" />
+                    <span asp-validation-for="rate" class="text-danger"></span>
+                </div> <br>
+            </div>
+            <div class="generos col-10 col-md-6">
+                <select asp-for="genreIds" class="form-select" multiple="multiple" size="6"
+                        asp-items="@(new SelectList((IEnumerable<NicoPasino.Core.Modelos.Movies.Genre>)ViewBag.generos, "Id", "Name"))">
+                </select>
+                <span asp-validation-for="genreIds" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <button class="btn btn-primary"><i class="bi bi-save me-1"></i>Guardar</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+        </div>
+
+    </form>
+</div>

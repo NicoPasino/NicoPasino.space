@@ -3,11 +3,13 @@
 using System;
 using System.Collections.Generic;
 
-namespace NicoPasino.Core.Modelos;
+namespace NicoPasino.Core.Modelos.Movies;
 
 public partial class Movie
 {
     public int Id { get; set; }
+
+    public int? IdPublica { get; set; }
 
     public string Title { get; set; }
 
@@ -20,6 +22,12 @@ public partial class Movie
     public string Poster { get; set; }
 
     public decimal Rate { get; set; }
+
+    public DateTime? FechaCreacion { get; set; }
+
+    public DateTime? FechaModificacion { get; set; }
+
+    public bool Activo { get; set; }
 
     public virtual ICollection<Genre> Genre { get; set; } = new List<Genre>();
 }

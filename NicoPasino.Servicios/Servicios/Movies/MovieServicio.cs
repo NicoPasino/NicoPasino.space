@@ -1,46 +1,52 @@
 ﻿using NicoPasino.Core.DTO.Movies;
-using NicoPasino.Core.Repositorio.Movies;
+using NicoPasino.Core.Interfaces;
+using NicoPasino.Core.Modelos.Movies;
 
 namespace NicoPasino.Servicios.Servicios.Movies
 {
     public class MovieServicio : IMovieServicio
     {
-        private readonly IMoviesRepo _repo;
-        public MovieServicio(IMoviesRepo repo) {
+        private readonly IMovieRepo _repo;
+        public MovieServicio(IMovieRepo repo) {
             _repo = repo;
         }
 
         // Lógica de negocio (validaciones de datos)
 
-        public Task<MovieDto> Create(MovieDto objeto) {
-            var movieDto = _repo.Create(objeto);
-            return movieDto;
-        }
-
-        public Task<MovieDto> Delete(int id) {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<MovieDto>> GetAll() {
-            throw new NotImplementedException();
-        }
-
-        public Task<MovieDto> GetById(int id) {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<string>> GetGenres() {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<MovieDto>> GetMovies() {
-            var objeto = _repo.GetAll();
-
+        public async Task<IEnumerable<MovieDto>> GetAll() {
+            var objeto = await _repo.GetAll();
             return objeto;
         }
 
-        public Task<MovieDto> Update(MovieDto obj) {
-            throw new NotImplementedException();
+        public async Task<MovieDto?> GetById(int id) {
+            var objeto = await _repo.GetById(id);
+            if (objeto != null) return objeto;
+            return null;
+        }
+
+        public async Task<bool> Create(MovieDto objeto) {
+            await _repo.Create(objeto);
+            return true;
+        }
+
+        public async Task<bool> Update(MovieDto obj) {
+            var objeto = await _repo.Update(obj);
+            return objeto;
+        }
+
+        public async Task<bool> Delete(int id) {
+            var objeto = await _repo.Delete(id);
+            return objeto;
+        }
+
+        /*public async Task<IEnumerable<MovieDto>> Search(string nombre) {
+            var objetos = await _repo.Search(nombre.ToLower());
+            return objetos;
+        }*/
+
+        public async Task<IEnumerable<Genre>> GetGenres() {
+            var generos = await _repo.GetGenres();
+            return generos;
         }
     }
 }
