@@ -5,7 +5,7 @@ namespace NicoPasino.Core.Interfaces
 {
     public interface IMovieServicio
     {
-        Task<IEnumerable<MovieDto>> GetAll();
+        Task<IEnumerable<MovieDto>> GetAll(string? titulo = "", int? idGenero = null);
         Task<MovieDto> GetById(int id);
         Task<bool> Create(MovieDto obj);
         Task<bool> Update(MovieDto obj);

@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using NicoPasino.Core.Interfaces;
-using NicoPasino.Core.Repositorio.Movies;
 using NicoPasino.Infra.Data;
 using NicoPasino.Infra.Repositorio;
 using NicoPasino.Servicios.Servicios.Movies;
@@ -20,7 +19,6 @@ namespace NicoPasino
 
             // permitir inyeccion
             builder.Services.AddScoped<IMovieServicio, MovieServicio>();
-            builder.Services.AddScoped<IMovieRepo, MoviesRepo>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped(typeof(IRepositorioGenerico<>), typeof(RepositorioGenerico<>));
 
