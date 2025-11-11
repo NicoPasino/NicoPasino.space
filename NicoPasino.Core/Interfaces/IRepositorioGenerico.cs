@@ -9,6 +9,7 @@ namespace NicoPasino.Core.Interfaces
         //public Task Delete(T entity);
         public Task<T?> GetById(int id);
         public Task<IEnumerable<T?>> GetAll();
+        public Task<T> GetAsync(Expression<Func<T, bool>>? filtro = null, string incluir = "");
         public Task<IEnumerable<T>> ListarAsync(Expression<Func<T, bool>>? filtro = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orden = null, string incluir = "");
     }
 }

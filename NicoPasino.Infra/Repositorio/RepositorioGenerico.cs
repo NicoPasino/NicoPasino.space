@@ -34,6 +34,21 @@ namespace NicoPasino.Infra.Repositorio
             await _context.SaveChangesAsync();
         }
 
+        public async Task<T> GetAsync(Expression<Func<T, bool>>? filtro = null, string incluir = "") {
+            IQueryable<T> query = _dbSet;
+
+            if (filtro != null)
+                query = query.Where(filtro);
+
+            if (!string.IsNullOrWhiteSpace(incluir)) {
+                foreach (var inc in incluir.Split(',', StringSplitOptions.RemoveEmptyEntries)) {
+                    query = query.Include(inc.Trim());
+                }
+            }
+
+            return await query.FirstOrDefaultAsync();
+        }
+
         public async Task<IEnumerable<T>> ListarAsync(Expression<Func<T, bool>>? filtro = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orden = null, string incluir = "") {
             IQueryable<T> query = _dbSet;
 

@@ -11,6 +11,7 @@ namespace NicoPasino.Core.Interfaces
         Task<bool> Update(MovieDto obj);
         Task<bool> Delete(int id);
         Task<IEnumerable<Genre>> GetGenres();
+        //Task<IEnumerable<MovieDto>> GetAllActive(int? idGenero = null);
         //Task<IEnumerable<MovieDto>> Search(string nombre);
     }
 }
