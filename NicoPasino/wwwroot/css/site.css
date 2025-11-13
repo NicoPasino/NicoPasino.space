@@ -17,9 +17,10 @@ html {
   min-height: 100%;
 }
 
+/*
 body {
   margin-bottom: 60px;
-}
+}*/
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
@@ -29,3 +30,220 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+
+
+
+
+
+/* ----- Index ----- */
+body {
+    background-color: #181818;
+    color: white;
+}
+
+#navBar {
+    padding: 10px;
+    display: flex;
+    text-align: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.inicio-crear a {
+    color: white;
+    font-weight: 900;
+    margin: 15px;
+}
+
+a {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+section {
+    display: flex;
+    margin: auto;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+
+.card {
+    margin: 10px;
+    width: 18rem;
+    border-color: gray;
+}
+
+.card-body {
+    background-color: #212121;
+    border-radius: 0 0 5px 5px;
+    color: white;
+}
+
+/* poster */
+.poster {
+    overflow: hidden;
+    border-radius: 5px 5px 0 0;
+    height: 450px;
+}
+
+.poster img {
+    height: 450px;
+    max-width: 100%;
+    object-fit: cover; /* ajustar imagen */
+    transition: 1s;
+    cursor: pointer;
+    transform: scale(1.01);
+}
+
+.poster img:hover {
+    transform: scale(1.1);
+}
+
+
+.title {
+    display: flex;
+    height: 50px;
+}
+
+.small {
+    font-size: small;
+    font-weight: 100;
+}
+
+.flexCard {
+    display: flex;
+    align-items: end;
+    justify-content: end;
+    color: gray;
+}
+
+strong {
+    text-decoration: underline;
+}
+/* Bootstrap */
+.badge {
+    z-index: 1;
+}
+
+footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+}
+
+.page-link {
+    background-color: var(--bs-bg-dark);
+}
+
+
+
+
+
+
+/* ----- Movie ----- */
+
+movie {
+    margin: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#movie {
+    margin: 15px;
+    border-radius: 10px;
+    background-color: #212121;
+}
+
+h1#title {
+    font-size: 3em;
+    text-align: center;
+}
+
+.cont {
+    margin: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    /* background-color: #3d3d3d; */
+}
+
+    .cont img {
+        height: 400px;
+        margin: 10px;
+        margin-bottom: 15px;
+    }
+
+.info {
+    margin: 15px;
+    position: relative;
+}
+
+#genre a { /* generos película */
+    color: dodgerblue !important;
+    text-decoration: underline;
+}
+
+    #genre a:hover {
+        color: royalblue !important;
+    }
+
+b {
+    color: white;
+}
+
+span {
+    line-height: 35px;
+    color: #aaa;
+}
+
+.botonesInfo {
+    bottom: 0;
+    position: absolute;
+}
+
+.infoTextos {
+    margin-bottom: 20px;
+}
+
+.ADCG {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+/* .ADC, .generos { width: 50%; } */
+
+/* Update Section */
+#update, #create {
+    background-color: #3d3d3d;
+    padding: 20px;
+    width: auto;
+    border-radius: 15px;
+    margin: 15px;
+}
+
+#formularioUpdate, #formularioCreate {
+    display: flex;
+    justify-content: center;
+}
+
+#generosUpdate, #generosCreate {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-evenly;
+    /* background-color: red; */
+}
+
+.form-check {
+    margin: 5px;
+    padding: 0;
+    /* background-color: blue; */
+}
+
+
+
+

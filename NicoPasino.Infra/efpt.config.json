@@ -7,9 +7,9 @@
    "MinimumProductVersion": "2.6.1166",
    "ModelNamespace": null,
    "OutputContextPath": "Data",
-   "OutputPath": "",
+   "OutputPath": "NicoPasino.Core.Modelos.Movies",
    "PreserveCasingWithRegex": true,
-   "ProjectRootNamespace": "",
+   "ProjectRootNamespace": "NicoPasino.Infra",
    "Schemas": null,
    "SelectedHandlebarsLanguage": 2,
    "SelectedToBeGenerated": 1,
@@ -24,7 +24,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[movie_genres]",
+         "Name": "[dbo].[movieGenres]",
          "ObjectType": 0
       }
    ],

@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace NicoPasino.Core.Modelos;
+namespace NicoPasino.Core.Modelos.Movies;
 
 public partial class Genre
 {
