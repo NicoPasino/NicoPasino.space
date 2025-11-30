@@ -1,5 +1,6 @@
 using dotenv.net;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using NicoPasino.Core.Interfaces;
 using NicoPasino.Infra.Data;
 using NicoPasino.Infra.Repositorio;
@@ -13,18 +14,13 @@ namespace NicoPasino
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddControllersWithViews();
 
-            // conexion
-            /* SQL Server
-             * builder.Services.AddDbContext<moviesdbContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesConnectionString"))
-            );*/
-            DotEnv.Load(); // del paquete dotenv.net
+            // Conexión a db
+            DotEnv.Load(); // leer .env
             var connectionString = Environment.GetEnvironmentVariable("DefaultConnection");
-            //var connectionString = builder.Configuration.GetConnectionString("DefaultConnection2");
             builder.Services.AddDbContext<moviesdbContext>(options =>
-            options.UseMySql(
-                connectionString, new MySqlServerVersion(new Version(8, 0, 39))
-            ));
+                options.UseMySql( connectionString, new MySqlServerVersion(new Version(8, 0, 39)))
+                //options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesConnectionString")) // SQL Server
+            );
 
             // permitir inyeccion
             builder.Services.AddScoped<IMovieServicio, MovieServicio>();
@@ -39,6 +35,12 @@ namespace NicoPasino
                 context.Database.Migrate();
             }*/
 
+
+            app.Use(async (context, next) => {
+                context.Response.Headers.Append("X-Robots-Tag", "noindex, nofollow");
+                await next();
+            });
+
             if (!app.Environment.IsDevelopment()) {
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
@@ -48,6 +50,7 @@ namespace NicoPasino
             app.UseRouting();
 
             app.UseAuthorization();
+
 
             app.MapStaticAssets();
             app.MapControllerRoute(
