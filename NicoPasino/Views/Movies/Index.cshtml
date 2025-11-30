@@ -7,7 +7,7 @@
     @foreach (var movie in Model) {
         <article class="card position-relative">
             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"> @movie.rate </span>
-            <a class="poster" asp-action="MovieInfo" asp-route-id="@movie.idPublica">
+            <a class="poster" asp-action="Movie" asp-route-id="@movie.idPublica">
                 <img src="@movie.poster" class="card-img-top" alt="@movie.title">
             </a>
             <div class="card-body">

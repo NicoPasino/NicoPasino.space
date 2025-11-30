@@ -19,8 +19,11 @@
                 </div>
 
                 <div class="botonesInfo">
-                    <a asp-action="Modificar" asp-route-id="@Model.idPublica" class="btn btn-primary">Modificar</a>
-                    <a asp-action="Eliminar" asp-route-id="@Model.idPublica" class="btn btn-danger">Eliminar</a>
+                    <a asp-action="Editar" asp-route-id="@Model.idPublica" class="btn btn-primary">Modificar</a>
+                    
+                    <form asp-action="Desactivar" asp-route-id="@Model.idPublica" method="post" class="row g-3">
+                        <button class="btn btn-danger">Eliminar</button>
+                    </form>
                 </div>
             </div>
         </div>

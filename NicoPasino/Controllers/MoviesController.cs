@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using NicoPasino.Core.DTO.Movies;
 using NicoPasino.Core.Interfaces;
+using NicoPasino.Core.Modelos.MoviesMySql;
 
 namespace NicoPasino.Controllers
 {
@@ -20,35 +22,45 @@ namespace NicoPasino.Controllers
                 var generos = await _servicio.GetGenres();
                 ViewBag.generos = generos ?? Enumerable.Empty<object>();
 
-                var all = await _servicio.GetAll();
-                return View(all ?? Enumerable.Empty<MovieDto>());
+                var all = await _servicio.GetAll(true);
+                var vr = View(all ?? Enumerable.Empty<MovieDto>());
+                vr.StatusCode = StatusCodes.Status200OK;
+                return vr;
             } catch (Exception ex) {
                 _logger.LogError(ex, "Error en MoviesController.Index");
                 TempData["Msg"] = "Ocurrió un error al cargar las películas.";
                 TempData["Tipo"] = "danger";
-                return View(Enumerable.Empty<MovieDto>());
+                var vr = View(Enumerable.Empty<MovieDto>());
+                vr.StatusCode = StatusCodes.Status500InternalServerError;
+                return vr;
             }
         }
 
         [HttpGet]
-        public async Task<IActionResult> MovieInfo(int id) {
+        public async Task<IActionResult> Movie(int id) {
             try {
                 var generos = await _servicio.GetGenres();
                 ViewBag.generos = generos ?? Enumerable.Empty<object>();
 
                 var movie = await _servicio.GetById(id);
                 if (movie != null) {
-                    return View(movie);
+                    var vr = View("MovieInfo", movie);
+                    vr.StatusCode = StatusCodes.Status200OK;
+                    return vr;
                 }
 
                 TempData["Msg"] = "No se encontró la película.";
                 TempData["Tipo"] = "warning";
-                return RedirectToAction(nameof(Index));
+                var notFoundVr = View("NotFound");
+                notFoundVr.StatusCode = StatusCodes.Status404NotFound;
+                return notFoundVr;
             } catch (Exception ex) {
                 _logger.LogError(ex, "Error en MoviesController.MovieInfo id={Id}", id);
                 TempData["Msg"] = "Ocurrió un error al obtener la información de la película.";
                 TempData["Tipo"] = "danger";
-                return RedirectToAction(nameof(Index));
+                var vr = RedirectToAction(nameof(Index));
+                Response.StatusCode = StatusCodes.Status500InternalServerError;
+                return vr;
             }
         }
 
@@ -74,15 +86,21 @@ namespace NicoPasino.Controllers
                 if (movies == null || !movies.Any()) {
                     TempData["Msg"] = "No se encontró ninguna película con los criterios indicados.";
                     TempData["Tipo"] = "info";
-                    return View("Index", Enumerable.Empty<MovieDto>());
+                    var vr = View("Index", Enumerable.Empty<MovieDto>());
+                    vr.StatusCode = StatusCodes.Status404NotFound;
+                    return vr;
                 }
 
-                return View("Index", movies);
+                var okVr = View("Index", movies);
+                okVr.StatusCode = StatusCodes.Status200OK;
+                return okVr;
             } catch (Exception ex) {
                 _logger.LogError(ex, "Error en MoviesController.Buscar titulo={Titulo} idGenero={IdGenero}", titulo, idGenero);
                 TempData["Msg"] = "Ocurrió un error al buscar películas.";
                 TempData["Tipo"] = "danger";
-                return View("Index", Enumerable.Empty<MovieDto>());
+                var vr = View("Index", Enumerable.Empty<MovieDto>());
+                vr.StatusCode = StatusCodes.Status500InternalServerError;
+                return vr;
             }
         }
 
@@ -91,12 +109,16 @@ namespace NicoPasino.Controllers
             try {
                 var generos = await _servicio.GetGenres();
                 ViewBag.generos = generos ?? Enumerable.Empty<object>();
-                return View();
+                var vr = View();
+                vr.StatusCode = StatusCodes.Status200OK;
+                return vr;
             } catch (Exception ex) {
                 _logger.LogError(ex, "Error en MoviesController.Crear GET");
                 TempData["Msg"] = "Ocurrió un error al preparar la vista de creación.";
                 TempData["Tipo"] = "danger";
-                return RedirectToAction(nameof(Index));
+                var vr = RedirectToAction(nameof(Index));
+                Response.StatusCode = StatusCodes.Status500InternalServerError;
+                return vr;
             }
         }
 
@@ -108,7 +130,9 @@ namespace NicoPasino.Controllers
                 ViewBag.generos = generos ?? Enumerable.Empty<object>();
 
                 if (!ModelState.IsValid) {
-                    return View(objeto);
+                    var vr = View(objeto);
+                    vr.StatusCode = StatusCodes.Status400BadRequest;
+                    return vr;
                 }
 
                 var ok = await _servicio.Create(objeto);
@@ -116,22 +140,30 @@ namespace NicoPasino.Controllers
                     _logger.LogWarning("No se pudo crear la película (Create returned false). Title={Title}", objeto?.title);
                     TempData["Msg"] = "No se pudo crear la película.";
                     TempData["Tipo"] = "danger";
-                    return View(objeto);
+                    var vr = View(objeto);
+                    vr.StatusCode = StatusCodes.Status500InternalServerError;
+                    return vr;
                 }
 
+                // Creado
                 TempData["Msg"] = "✅ Película creada";
                 TempData["Tipo"] = "success";
-                return RedirectToAction(nameof(Index));
+
+                var vrOk = View(nameof(Index));
+                vrOk.StatusCode = StatusCodes.Status201Created;
+                return vrOk;
             } catch (Exception ex) {
                 _logger.LogError(ex, "Error en MoviesController.Crear POST");
                 TempData["Msg"] = "Ocurrió un error al crear la película.";
                 TempData["Tipo"] = "danger";
-                return View(objeto);
+                var vr = View(objeto);
+                vr.StatusCode = StatusCodes.Status500InternalServerError;
+                return vr;
             }
         }
 
         [HttpGet] // Vista MODIFICAR
-        public async Task<IActionResult> Modificar(int id) {
+        public async Task<IActionResult> Editar(int id) {
             try {
                 var generos = await _servicio.GetGenres();
                 ViewBag.generos = generos ?? Enumerable.Empty<object>();
@@ -140,30 +172,38 @@ namespace NicoPasino.Controllers
                 if (movie == null) {
                     TempData["Msg"] = "No se encontró la película.";
                     TempData["Tipo"] = "warning";
-                    return RedirectToAction(nameof(Index));
+                    var notFoundVr = View("NotFound");
+                    notFoundVr.StatusCode = StatusCodes.Status404NotFound;
+                    return notFoundVr;
                 }
 
-                return View(movie);
+                var vr = View("Modificar", movie);
+                vr.StatusCode = StatusCodes.Status200OK;
+                return vr;
             } catch (Exception ex) {
                 _logger.LogError(ex, "Error en MoviesController.Modificar GET id={Id}", id);
                 TempData["Msg"] = "Ocurrió un error al preparar la edición.";
                 TempData["Tipo"] = "danger";
-                return RedirectToAction(nameof(Index));
+                var vr = RedirectToAction(nameof(Index));
+                Response.StatusCode = StatusCodes.Status500InternalServerError;
+                return vr;
             }
         }
 
         [HttpPost] // API
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Modificar(MovieDto objeto) {
+        public async Task<IActionResult> Editar(MovieDto objeto) {
             try {
                 var generos = await _servicio.GetGenres();
                 ViewBag.generos = generos ?? Enumerable.Empty<object>();
 
                 if (!ModelState.IsValid) {
-                    return View(objeto);
+                    var vr = View("Modificar", objeto);
+                    vr.StatusCode = StatusCodes.Status400BadRequest;
+                    return vr;
                 }
 
-                var ok = await _servicio.Update(objeto);
+                var ok = await _servicio.Update(objeto); // actualizar
                 if (ok) {
                     TempData["Msg"] = "✅ Película actualizada";
                     TempData["Tipo"] = "success";
@@ -173,35 +213,96 @@ namespace NicoPasino.Controllers
                 _logger.LogWarning("No se pudo actualizar la película. idPublica={Id}", objeto?.idPublica);
                 TempData["Msg"] = "No se pudo actualizar la película.";
                 TempData["Tipo"] = "danger";
-                return View(objeto);
+                var failVr = View("Modificar", objeto);
+                failVr.StatusCode = StatusCodes.Status500InternalServerError;
+                return failVr;
             } catch (Exception ex) {
                 _logger.LogError(ex, "Error en MoviesController.Modificar POST idPublica={Id}", objeto?.idPublica);
                 TempData["Msg"] = "Ocurrió un error al actualizar la película.";
                 TempData["Tipo"] = "danger";
-                return View(objeto);
+                var vr = View("Modificar", objeto);
+                vr.StatusCode = StatusCodes.Status500InternalServerError;
+                return vr;
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Eliminar(int id) {
+
+        //[HttpGet]
+        [HttpPost]
+        public async Task<IActionResult> Desactivar(int id) {
+            // TODO: poner delay según la última eliminacion + incrementar delay
+
             var generos = await _servicio.GetGenres();
             ViewBag.generos = generos ?? Enumerable.Empty<object>();
             try {
-                var ok = await _servicio.Delete(id);
+                var ok = await _servicio.Enable(id, false);
                 if (ok) {
                     TempData["Msg"] = "✅ Pelicula eliminada";
                     TempData["Tipo"] = "success";
+                    return RedirectToAction(nameof(Index));
                 }
                 else {
                     TempData["Msg"] = "No se pudo eliminar la pelicula";
                     TempData["Tipo"] = "danger";
+                    var vr = RedirectToAction(nameof(Index));
+                    Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    return vr;
                 }
-                return RedirectToAction(nameof(Index));
             } catch (Exception ex) {
                 _logger.LogError(ex, "Error en MoviesController.Eliminar id={Id}", id);
                 TempData["Msg"] = "Ocurrió un error al eliminar la pelicula.";
                 TempData["Tipo"] = "danger";
-                return RedirectToAction(nameof(Index));
+                var vr = RedirectToAction(nameof(Index));
+                Response.StatusCode = StatusCodes.Status500InternalServerError;
+                return vr;
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Activar(int id) {
+            var generos = await _servicio.GetGenres();
+            ViewBag.generos = generos ?? Enumerable.Empty<object>();
+            try {
+                var ok = await _servicio.Enable(id, true);
+                if (ok) {
+                    TempData["Msg"] = "✅ Pelicula activada";
+                    TempData["Tipo"] = "success";
+                    return RedirectToAction(nameof(Index));
+                }
+                else {
+                    TempData["Msg"] = "No se pudo activar la pelicula";
+                    TempData["Tipo"] = "danger";
+                    var vr = RedirectToAction(nameof(Index));
+                    Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    return vr;
+                }
+            } catch (Exception ex) {
+                _logger.LogError(ex, "Error en MoviesController.Activar id={Id}", id);
+                TempData["Msg"] = "Ocurrió un error al activar la pelicula.";
+                TempData["Tipo"] = "danger";
+                var vr = RedirectToAction(nameof(Index));
+                Response.StatusCode = StatusCodes.Status500InternalServerError;
+                return vr;
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Desactivados() {
+            try {
+                var generos = await _servicio.GetGenres();
+                ViewBag.generos = generos ?? Enumerable.Empty<object>();
+
+                var all = await _servicio.GetAll(false);
+                var vr = View(nameof(Index), (all ?? Enumerable.Empty<MovieDto>()));
+                vr.StatusCode = StatusCodes.Status200OK;
+                return vr;
+            } catch (Exception ex) {
+                _logger.LogError(ex, "Error en MoviesController.Index");
+                TempData["Msg"] = "Ocurrió un error al cargar las películas.";
+                TempData["Tipo"] = "danger";
+                var vr = RedirectToAction(nameof(Index), (Enumerable.Empty<MovieDto>()));
+                Response.StatusCode = StatusCodes.Status500InternalServerError;
+                return vr;
             }
         }
     }

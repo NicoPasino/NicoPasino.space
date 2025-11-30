@@ -17,7 +17,7 @@ namespace NicoPasino.Core.Mapper.Movies
                 objetoDTO.poster = movieModel.Poster;
                 objetoDTO.rate = movieModel.Rate;
                 if (movieModel.Moviegenres != null && movieModel.Moviegenres.Any()) {
-                    objetoDTO.genreIds = movieModel.Moviegenres.Select(g => g.Id).ToList();
+                    objetoDTO.genreIds = movieModel.Moviegenres.Select(g => g.Genre.Id).ToList();
                     objetoDTO.genreNames = movieModel.Moviegenres.Select(g => g.Genre.Name).ToList();
                 }
             } catch (Exception ex) {

@@ -34,25 +34,38 @@
             <!-- Año - Duración - Calificación - Géneros -->
             <div class="ADC col-12 col-md-6">
                 <div class="col-sm-6 col-xl-6 mx-auto">
-                    <label asp-for="year" class="form-label">Año</label>
+                    <label asp-for="year" class="form-label">Año <span class="detalle">(1900 - 2026)</span> </label>
                     <input asp-for="year" inputmode="numeric" class="form-control" step="1" min="1900" max="2050" />
                     <span asp-validation-for="year" class="text-danger"></span>
                 </div> <br>
                 <div class="col-sm-6 col-xl-6 mx-auto">
-                    <label asp-for="duration" class="form-label">Duración</label>
+                    <label asp-for="duration" class="form-label">Duración <span class="detalle">(30 - 300)</span></label>
                     <input asp-for="duration" inputmode="numeric" class="form-control" step="1" min="30" max="300" />
                     <span asp-validation-for="duration" class="text-danger"></span>
                 </div> <br>
                 <div class="col-sm-6 col-xl-6 mx-auto">
-                    <label asp-for="rate" class="form-label">Calificación</label>
+                    <label asp-for="rate" class="form-label">Calificación <span class="detalle">(1.0 - 10.0)</span></label>
                     <input asp-for="rate" inputmode="numeric" class="form-control" step="0.1" min="0" max="10" />
                     <span asp-validation-for="rate" class="text-danger"></span>
                 </div> <br>
             </div>
+
             <div class="generos col-10 col-md-6">
-                <select asp-for="genreIds" class="form-select" multiple="multiple" size="6"
-                        asp-items="@(new SelectList((IEnumerable<Genre>)ViewBag.generos, "Id", "Name"))">
-                </select>
+                <label asp-for="genreIds" class="form-label"> Géneros <span class="detalle">(uno o varios)</span></label>
+
+                <div class="d-flex flex-wrap gap-2 mb-2" role="group" aria-label="Géneros">
+                    @foreach (var g in (IEnumerable<Genre>)ViewBag.generos) {
+                        var gid = g.Id;
+                        var gname = g.Name;
+                        var isChecked = Model.genreIds != null && Model.genreIds.Contains(gid);
+                        <input type="checkbox" class="btn-check" 
+                               name="genreIds" id="genre-@gid"
+                               value="@gid" autocomplete="off"
+                               @(isChecked ? "checked" : "") 
+                        />
+                        <label class="btn btn-outline-primary mb-1" for="genre-@gid">@gname</label>
+                    }
+                </div>
                 <span asp-validation-for="genreIds" class="text-danger"></span>
             </div>
         </div>

@@ -55,6 +55,12 @@ body {
     font-weight: 900;
     margin: 15px;
 }
+.inicio-crear a:hover{
+    color: lightblue;
+    font-weight: 900;
+    margin: 15px;
+    transform: scale(1.1);
+}
 
 a {
     cursor: pointer;
@@ -247,3 +253,7 @@ span {
 
 
 
+.detalle {
+    color: gray;
+    font-size: small;
+}
