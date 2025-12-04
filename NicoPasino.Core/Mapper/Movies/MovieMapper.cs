@@ -16,12 +16,16 @@ namespace NicoPasino.Core.Mapper.Movies
                 objetoDTO.duration = movieModel.Duration;
                 objetoDTO.poster = movieModel.Poster;
                 objetoDTO.rate = movieModel.Rate;
-                if (movieModel.Moviegenres != null && movieModel.Moviegenres.Any()) {
-                    objetoDTO.genreIds = movieModel.Moviegenres.Select(g => g.Genre.Id).ToList();
-                    objetoDTO.genreNames = movieModel.Moviegenres.Select(g => g.Genre.Name).ToList();
-                }
-            } catch (Exception ex) {
-                // No propagar excepciones desde el mapper
+
+                var mg = movieModel.Moviegenres ?? Enumerable.Empty<Moviegenres>();
+                objetoDTO.genreIds = mg.Select(g => g.GenreId).ToList();
+                objetoDTO.genreNames = mg
+                    .Select(g => g.Genre?.Name)
+                    .Where(n => !string.IsNullOrWhiteSpace(n))
+                    .Distinct()
+                    .ToList();
+            } catch (Exception) {
+                // no propagar
             }
             return objetoDTO;
         }

@@ -7,7 +7,7 @@ namespace NicoPasino.Core.Interfaces
         public Task<T> Add(T entity);
         public Task AddRange(IEnumerable<T> entity);
         public Task<int> Update(T entity);
-        //public Task Delete(T entity);
+        public Task Delete(T entity);
         public Task DeleteRange(IEnumerable<T> entity);
         public Task<T?> GetById(int id);
         public Task<IEnumerable<T?>> GetAll();

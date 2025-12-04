@@ -25,6 +25,7 @@ namespace NicoPasino
             // permitir inyeccion
             builder.Services.AddScoped<IMovieServicio, MovieServicio>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IGeneroServicio, GeneroServicio>();
             builder.Services.AddScoped(typeof(IRepositorioGenerico<>), typeof(RepositorioGenerico<>));
 
             var app = builder.Build();

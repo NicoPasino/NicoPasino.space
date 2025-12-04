@@ -1,6 +1,5 @@
 ﻿@using NicoPasino.Models
 @{
-    var generos = ViewBag.generos;
     var mensaje = TempData["Msg"] as string; // para el PopUp
 }
 <!DOCTYPE html>
@@ -28,14 +27,9 @@
             <div class="col-6 dropdown">
                 <h1>Películas<font id="genero"></font></h1>
                 <a class="dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false"> Géneros </a>
+
                 <ul class="dropdown-menu" id="genresMenu">
-                    <li><a class="dropdown-item" asp-controller="Movies" asp-action="Index">TODOS</a></li>
-                    @if(generos != null){
-                        @foreach(var i in generos)
-                        {
-                            <li><a class="dropdown-item" asp-controller="Movies" asp-action="Buscar" asp-route-idGenero="@i.Id">@i.Name</a></li>
-                        }
-                    }
+                    @await Component.InvokeAsync("Genres")
                 </ul>
             </div>
 

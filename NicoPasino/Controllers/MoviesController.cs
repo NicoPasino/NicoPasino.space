@@ -19,9 +19,6 @@ namespace NicoPasino.Controllers
         [HttpGet]
         public async Task<IActionResult> Index() {
             try {
-                var generos = await _servicio.GetGenres();
-                ViewBag.generos = generos ?? Enumerable.Empty<object>();
-
                 var all = await _servicio.GetAll(true);
                 var vr = View(all ?? Enumerable.Empty<MovieDto>());
                 vr.StatusCode = StatusCodes.Status200OK;
@@ -39,9 +36,6 @@ namespace NicoPasino.Controllers
         [HttpGet]
         public async Task<IActionResult> Movie(int id) {
             try {
-                var generos = await _servicio.GetGenres();
-                ViewBag.generos = generos ?? Enumerable.Empty<object>();
-
                 var movie = await _servicio.GetById(id);
                 if (movie != null) {
                     var vr = View("MovieInfo", movie);
@@ -67,9 +61,6 @@ namespace NicoPasino.Controllers
         [HttpGet]
         public async Task<IActionResult> Buscar(string? titulo = "", int? idGenero = null) {
             try {
-                var generos = await _servicio.GetGenres();
-                ViewBag.generos = generos ?? Enumerable.Empty<object>();
-
                 var movies = Enumerable.Empty<MovieDto>();
 
                 titulo = titulo?.Trim();
@@ -104,30 +95,13 @@ namespace NicoPasino.Controllers
             }
         }
 
-        [HttpGet] // Vista CREAR
-        public async Task<IActionResult> Crear() {
-            try {
-                var generos = await _servicio.GetGenres();
-                ViewBag.generos = generos ?? Enumerable.Empty<object>();
-                var vr = View();
-                vr.StatusCode = StatusCodes.Status200OK;
-                return vr;
-            } catch (Exception ex) {
-                _logger.LogError(ex, "Error en MoviesController.Crear GET");
-                TempData["Msg"] = "Ocurrió un error al preparar la vista de creación.";
-                TempData["Tipo"] = "danger";
-                var vr = RedirectToAction(nameof(Index));
-                Response.StatusCode = StatusCodes.Status500InternalServerError;
-                return vr;
-            }
-        }
+        [HttpGet]
+        public async Task<IActionResult> Crear() => View();
 
         [HttpPost] // API
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Crear(MovieDto objeto) {
             try {
-                var generos = await _servicio.GetGenres();
-                ViewBag.generos = generos ?? Enumerable.Empty<object>();
 
                 if (!ModelState.IsValid) {
                     var vr = View(objeto);
@@ -165,9 +139,6 @@ namespace NicoPasino.Controllers
         [HttpGet] // Vista MODIFICAR
         public async Task<IActionResult> Editar(int id) {
             try {
-                var generos = await _servicio.GetGenres();
-                ViewBag.generos = generos ?? Enumerable.Empty<object>();
-
                 var movie = await _servicio.GetById(id);
                 if (movie == null) {
                     TempData["Msg"] = "No se encontró la película.";
@@ -194,8 +165,6 @@ namespace NicoPasino.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Editar(MovieDto objeto) {
             try {
-                var generos = await _servicio.GetGenres();
-                ViewBag.generos = generos ?? Enumerable.Empty<object>();
 
                 if (!ModelState.IsValid) {
                     var vr = View("Modificar", objeto);
@@ -231,9 +200,6 @@ namespace NicoPasino.Controllers
         [HttpPost]
         public async Task<IActionResult> Desactivar(int id) {
             // TODO: poner delay según la última eliminacion + incrementar delay
-
-            var generos = await _servicio.GetGenres();
-            ViewBag.generos = generos ?? Enumerable.Empty<object>();
             try {
                 var ok = await _servicio.Enable(id, false);
                 if (ok) {
@@ -260,8 +226,6 @@ namespace NicoPasino.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Activar(int id) {
-            var generos = await _servicio.GetGenres();
-            ViewBag.generos = generos ?? Enumerable.Empty<object>();
             try {
                 var ok = await _servicio.Enable(id, true);
                 if (ok) {
@@ -289,9 +253,6 @@ namespace NicoPasino.Controllers
         [HttpGet]
         public async Task<IActionResult> Desactivados() {
             try {
-                var generos = await _servicio.GetGenres();
-                ViewBag.generos = generos ?? Enumerable.Empty<object>();
-
                 var all = await _servicio.GetAll(false);
                 var vr = View(nameof(Index), (all ?? Enumerable.Empty<MovieDto>()));
                 vr.StatusCode = StatusCodes.Status200OK;

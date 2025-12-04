@@ -1,0 +1,14 @@
+﻿@model IEnumerable<NicoPasino.Core.Modelos.MoviesMySql.Genre>
+
+<li><a class="dropdown-item" asp-controller="Movies" asp-action="Index">TODOS</a></li>
+
+@if (Model != null && Model.Any()) {
+    foreach (var g in Model) {
+        <li>
+            <a class="dropdown-item" asp-controller="Movies" asp-action="Buscar" asp-route-idGenero="@g.Id">@g.Name</a>
+        </li>
+    }
+}
+else {
+    <li class="dropdown-item disabled">No hay géneros</li>
+}

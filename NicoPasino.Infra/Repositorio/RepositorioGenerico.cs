@@ -40,6 +40,12 @@ namespace NicoPasino.Infra.Repositorio
             return _context.SaveChanges();
         }
 
+        public async Task Delete(T entity) {
+            _dbSet.Remove(entity);
+            await _context.SaveChangesAsync();
+            return;
+        }
+
         public async Task DeleteRange(IEnumerable<T> entities) {
             _dbSet.RemoveRange(entities);
             await _context.SaveChangesAsync();

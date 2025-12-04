@@ -22,7 +22,7 @@ namespace NicoPasino.Servicios.Servicios.Movies
                 var moviesDb = await _repoG.ListarAsync(
                     filtro: m => m.Activo == activo,
                     orden: q => q.OrderByDescending(m => m.FechaModificacion ?? m.FechaCreacion),
-                    incluir: "Moviegenres"
+                    incluir: "Moviegenres.Genre"
                 );
 
                 // si hay peliculas...
@@ -46,7 +46,7 @@ namespace NicoPasino.Servicios.Servicios.Movies
                 var moviesDb = await _repoG.ListarAsync(
                     filtro: m => m.Activo && (string.IsNullOrEmpty(titulo) || m.Title.Contains(titulo)),
                     orden: q => q.OrderByDescending(m => m.FechaModificacion ?? m.FechaCreacion),
-                    incluir: "Moviegenres"
+                    incluir: "Moviegenres.Genre"
                 );
 
                 // si hay peliculas...
@@ -70,7 +70,7 @@ namespace NicoPasino.Servicios.Servicios.Movies
                 var moviesDb = await _repoG.ListarAsync(
                     filtro: m => m.Activo && (!idGenero.HasValue || (m.Moviegenres != null && m.Moviegenres.Any(g => g.GenreId == idGenero.Value))),
                     orden: q => q.OrderByDescending(m => m.FechaModificacion ?? m.FechaCreacion),
-                    incluir: "Moviegenres"
+                    incluir: "Moviegenres.Genre"
                 );
 
                 // si hay peliculas...
@@ -90,7 +90,7 @@ namespace NicoPasino.Servicios.Servicios.Movies
             try {
                 var objDb = await _repoG.GetAsync(
                     filtro: m => m.IdPublica == id,
-                    incluir: "Moviegenres"
+                    incluir: "Moviegenres.Genre"
                 );
 
                 if (objDb != null) {

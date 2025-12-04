@@ -1,26 +1,32 @@
 ﻿@model IEnumerable<NicoPasino.Core.DTO.Movies.MovieDto>
 @{
-    ViewData["Title"] = "Peliculas";
+    ViewData["Title"] = "Películas";
 }
 
 <section class="col-12 col-xl-9">
-    @foreach (var movie in Model) {
-        <article class="card position-relative">
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"> @movie.rate </span>
-            <a class="poster" asp-action="Movie" asp-route-id="@movie.idPublica">
-                <img src="@movie.poster" class="card-img-top" alt="@movie.title">
-            </a>
-            <div class="card-body">
-                <div class="title">
-                    <h5>@movie.title <font class="small">@movie.year</font></h5>
-                </div>
+    @if (Model != null && Model.Any()) {
+        @foreach (var movie in Model) {
+            <article class="card position-relative">
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"> @movie.rate </span>
+                <a class="poster" asp-action="Movie" asp-route-id="@movie.idPublica">
+                    <img src="@movie.poster" class="card-img-top" alt="@movie.title">
+                </a>
+                <div class="card-body">
+                    <div class="title">
+                        <h5>@movie.title <font class="small">@movie.year</font></h5>
+                    </div>
 
-                <div class="flexCard">
-                    @if (movie.genreNames != null && movie.genreNames.Any()) {
-                        <font class="small">@string.Join(" / ", movie.genreNames).</font>
-                    }
+                    <div class="flexCard">
+                        @if (movie.genreNames != null && movie.genreNames.Any()) {
+                            <font class="small">@string.Join(" / ", movie.genreNames).</font>
+                        }
+                    </div>
                 </div>
-            </div>
-        </article>
+            </article>
+        }
+    }
+    else
+    {
+        <h3 class="text-secondary">Lista vacía</h3>
     }
 </section>
