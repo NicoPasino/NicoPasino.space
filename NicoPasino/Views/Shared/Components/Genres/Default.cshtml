@@ -5,7 +5,7 @@
 @if (Model != null && Model.Any()) {
     foreach (var g in Model) {
         <li>
-            <a class="dropdown-item" asp-controller="Movies" asp-action="Buscar" asp-route-idGenero="@g.Id">@g.Name</a>
+            <a class="dropdown-item" asp-controller="Movies" asp-action="Filtrar" asp-route-idGenero="@g.Id">@g.Name</a>
         </li>
     }
 }

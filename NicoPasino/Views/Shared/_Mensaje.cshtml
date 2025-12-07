@@ -1,5 +1,64 @@
 ﻿@model MensajeViewModel
 
+<div id="_mensaje_" class="alert alert-@Model.Tipo position-fixed top-0 m-3 w-50 z-1" role="alert">
+    @{
+        string titulo = "Info:";
+
+        switch (Model.Tipo)
+        {
+            case "success":
+                titulo = "Completado:";
+                break;
+            case "danger":
+                titulo = "Error:";
+                break;
+            case "warning":
+                titulo = "Advertencia:";
+                break;
+            default:
+                titulo = "Info:";
+                break;
+        }
+    }
+    
+    <p> 
+        <strong>@titulo</strong>
+        @Model.Mensaje
+     </p>
+</div>
+
+<script>
+    (function() {
+        var el = document.getElementById('_mensaje_');
+        if (!el) return;
+
+        // Preparar transición suave
+        el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        el.style.opacity = '1';
+
+        // Desaparecer tras 3 segundos y luego eliminar del DOM
+        setTimeout(function() {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(-10px)';
+            setTimeout(function() {
+                if (el.parentNode) el.parentNode.removeChild(el);
+            }, 500); // esperar a que termine la transición
+        }, 3000);
+    })();
+</script>
+
+@* <div class="toast-container position-fixed top-0 end-0 p-3">
+    <div class="toast align-items-center text-bg-@tipo border-0 show" role="alert">
+        <div class="d-flex">
+            <div class="toast-body">
+                @Model.Mensaje
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div> *@
+
 @*  <style>
     #Model.Titulo {
         display: none;
@@ -29,41 +88,3 @@
      </div>
      <a href="#!" class="btn btn-primary">Aceptar</a>
  </div> *@
-
-@* -------------------------------------------------------------------------------- *@
-
-<div id="_mensaje_" class="alert alert-@Model.Tipo position-fixed top-0 m-3 w-50 z-1" role="alert">
-    @* <strong>@Model.Titulo</strong> *@
-    <p>@Model.Mensaje</p>
-</div>
-
-<script>
-    (function() {
-        var el = document.getElementById('_mensaje_');
-        if (!el) return;
-
-        // Preparar transición suave
-        el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-        el.style.opacity = '1';
-
-        // Desaparecer tras 3 segundos y luego eliminar del DOM
-        setTimeout(function() {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(-10px)';
-            setTimeout(function() {
-                if (el.parentNode) el.parentNode.removeChild(el);
-            }, 500); // esperar a que termine la transición
-        }, 3000);
-    })();
-</script>
-@* <div class="toast-container position-fixed top-0 end-0 p-3">
-    <div class="toast align-items-center text-bg-@tipo border-0 show" role="alert">
-        <div class="d-flex">
-            <div class="toast-body">
-                @Model.Mensaje
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto"
-                    data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
-</div> *@

@@ -1,0 +1,16 @@
+﻿@{
+    var statusCode = ViewData["StatusCode"] ?? 404;
+    ViewData["Title"] = $"Error {statusCode}";
+    string controlador = ViewData["Controlador"] as string ?? "Home";
+    string mensaje = ViewData["Mensaje"] as string ?? "¡Página No Encontrada!";
+}
+
+<div class="container text-center mt-5">
+    <h1 class="display-1 text-danger">Error @statusCode</h1>
+    <h2 class="mb-4">@mensaje</h2>
+
+    @if((int)statusCode == 404){
+        <p class="lead"> Lo sentimos, pero la página que estás buscando no existe o ha sido movida. </p>
+    }
+    <a asp-controller="@controlador" asp-action="Index" class="btn btn-primary mt-3">Volver a la página de inicio</a>
+</div>
