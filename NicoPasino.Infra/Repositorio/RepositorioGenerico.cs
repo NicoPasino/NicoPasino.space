@@ -37,7 +37,7 @@ namespace NicoPasino.Infra.Repositorio
 
         public async Task<int> Update(T entity) {
             _dbSet.Update(entity);
-            return _context.SaveChanges();
+            return await _context.SaveChangesAsync();
         }
 
         public async Task Delete(T entity) {

@@ -1,30 +1,41 @@
 ﻿{
    "CodeGenerationMode": 5,
-   "ContextClassName": "moviesdbContext",
+   "ContextClassName": "ventasdbContext",
    "ContextNamespace": null,
    "FilterSchemas": false,
    "IncludeConnectionString": false,
-   "MinimumProductVersion": "2.6.1166",
+   "IrregularWords": null,
+   "MinimumProductVersion": "2.6.1248",
    "ModelNamespace": null,
    "OutputContextPath": null,
-   "OutputPath": "Modelos\/MoviesMySql",
+   "OutputPath": "Modelos\/Ventas",
+   "PluralRules": null,
    "PreserveCasingWithRegex": true,
    "ProjectRootNamespace": "NicoPasino.Core",
    "Schemas": null,
    "SelectedHandlebarsLanguage": 2,
    "SelectedToBeGenerated": 2,
+   "SingularRules": null,
    "T4TemplatePath": null,
    "Tables": [
       {
-         "Name": "genre",
+         "Name": "categoria",
          "ObjectType": 0
       },
       {
-         "Name": "movie",
+         "Name": "cliente",
          "ObjectType": 0
       },
       {
-         "Name": "moviegenres",
+         "Name": "producto",
+         "ObjectType": 0
+      },
+      {
+         "Name": "venta",
+         "ObjectType": 0
+      },
+      {
+         "Name": "ventaporproducto",
          "ObjectType": 0
       }
    ],

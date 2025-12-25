@@ -1,9 +1,11 @@
 using dotenv.net;
 using Microsoft.EntityFrameworkCore;
 using NicoPasino.Core.Interfaces;
+using NicoPasino.Core.Interfaces.Ventas;
 using NicoPasino.Infra.Data;
 using NicoPasino.Infra.Repositorio;
 using NicoPasino.Servicios.Servicios.Movies;
+using NicoPasino.Servicios.Servicios.Ventas;
 
 namespace NicoPasino
 {
@@ -11,21 +13,47 @@ namespace NicoPasino
     {
         public static void Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);
+
+            // definir reglas CORS
+            var misReglasCORS = "_misReglasCORS";
+            builder.Services.AddCors(options => {
+                options.AddPolicy(name: misReglasCORS,
+                                  policy => {
+                                      policy.WithOrigins("http://localhost:3000", "https://nicopasino.space", "https://sistema-ventas.nicopasino.space", "http://localhost:5173", "https://localhost:5173")
+                                            .AllowAnyHeader()
+                                            .AllowAnyMethod();
+                                  });
+            });
+
             builder.Services.AddControllersWithViews();
 
-            // Conexión a db
             DotEnv.Load(); // leer .env
-            var connectionString = Environment.GetEnvironmentVariable("DefaultConnection");
+
+            // conexión a pelÃículas
+            var moviesdb = Environment.GetEnvironmentVariable("movies2");
             builder.Services.AddDbContext<moviesdbContext>(options =>
-                options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 39)))
-            //options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesConnectionString")) // SQL Server
+                options.UseMySql(moviesdb, new MySqlServerVersion(new Version(8, 0, 39)))
+            );
+
+            // conexion a ventas
+            var ventasdb = Environment.GetEnvironmentVariable("ventas2");
+            builder.Services.AddDbContext<ventasdbContext>(options =>
+                options.UseMySql(ventasdb, new MySqlServerVersion(new Version(8, 0, 39)))
             );
 
             // permitir inyección
-            builder.Services.AddScoped<IMovieServicio, MovieServicio>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IGeneroServicio, GeneroServicio>();
             builder.Services.AddScoped(typeof(IRepositorioGenerico<>), typeof(RepositorioGenerico<>));
+            builder.Services.AddScoped(typeof(IRepositorioGenericoVentas<>), typeof(RepositorioGenericoVentas<>));
+
+            // repositorio genérico para entidades de ventas (ejemplo: Producto)
+            //builder.Services.AddScoped<IRepositorioGenerico<Producto>, RepositorioGenericoVentas<Producto>>();
+
+            builder.Services.AddScoped<IMovieServicio, MovieServicio>();
+            builder.Services.AddScoped<IGeneroServicio, GeneroServicio>();
+
+            builder.Services.AddScoped<IProductoServicio, ProductoServicio>();
+            //builder.Services.AddScoped<IServicioGenerico<VentaDto>, VentaServicio>();
 
             // cambiar texto de validación de la vista
             builder.Services.AddRazorPages()
@@ -60,6 +88,9 @@ namespace NicoPasino
             app.UseHttpsRedirection();
             app.UseRouting();
 
+            // Aplicar la política de CORS
+            app.UseCors(misReglasCORS);
+
             app.UseAuthorization();
 
 
@@ -73,3 +104,6 @@ namespace NicoPasino
         }
     }
 }
+
+
+//options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesConnectionString")) // SQL Server
