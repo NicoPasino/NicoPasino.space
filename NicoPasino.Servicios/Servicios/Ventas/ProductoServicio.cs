@@ -8,7 +8,7 @@ using NicoPasino.Core.Modelos.Ventas;
 
 namespace NicoPasino.Servicios.Servicios.Ventas
 {
-    public class ProductoServicio : IProductoServicio
+    public class ProductoServicio : IServicioGenerico<Producto, ProductoDto>
     {
         private readonly IRepositorioGenericoVentas<Producto> _repoG;
         //private readonly IUnitOfWork _uow;

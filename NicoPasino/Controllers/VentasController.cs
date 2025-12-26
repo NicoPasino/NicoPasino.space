@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NicoPasino.Core.DTO.Ventas;
 using NicoPasino.Core.Interfaces.Ventas;
+using NicoPasino.Core.Modelos.Ventas;
 
 namespace NicoPasino.Controllers
 {
@@ -7,9 +9,9 @@ namespace NicoPasino.Controllers
     [ApiController]
     public partial class VentasController : ControllerBase
     {
-        private readonly IProductoServicio _productoServicio;
-        private readonly IProductoServicio _ventaServicio;
-        public VentasController(IProductoServicio pServicio, IProductoServicio vServicio) {
+        private readonly IServicioGenerico<Producto, ProductoDto> _productoServicio;
+        private readonly IServicioGenerico<Venta, VentaDto> _ventaServicio;
+        public VentasController(IServicioGenerico<Producto, ProductoDto> pServicio, IServicioGenerico<Venta, VentaDto> vServicio) {
             _productoServicio = pServicio;
             _ventaServicio = vServicio;
         }
