@@ -11,7 +11,11 @@ public partial class Venta
 
     public int IdCliente { get; set; }
 
-    public decimal PrecioTotal { get; set; }
+    public int? Numero { get; set; }
+
+    public string? Detalle { get; set; }
+
+    //public decimal PrecioTotal { get; set; }
 
     public DateTime? FechaVenta { get; set; }
 

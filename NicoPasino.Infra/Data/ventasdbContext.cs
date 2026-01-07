@@ -53,10 +53,11 @@ public partial class ventasdbContext : DbContext
 
             entity.HasIndex(e => e.Correo, "correo").IsUnique();
 
+            entity.HasIndex(e => e.Documento, "documento").IsUnique();
+
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Correo)
-                .IsRequired()
-                .HasColumnName("correo");
+            entity.Property(e => e.Correo).HasColumnName("correo");
+            entity.Property(e => e.Documento).HasColumnName("documento");
             entity.Property(e => e.Nombre)
                 .IsRequired()
                 .HasMaxLength(150)
@@ -111,14 +112,13 @@ public partial class ventasdbContext : DbContext
             entity.HasIndex(e => e.IdCliente, "idCliente");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Detalle).HasColumnName("detalle");
             entity.Property(e => e.FechaVenta)
                 .HasMaxLength(6)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP(6)")
                 .HasColumnName("fechaVenta");
             entity.Property(e => e.IdCliente).HasColumnName("idCliente");
-            entity.Property(e => e.PrecioTotal)
-                .HasPrecision(10, 2)
-                .HasColumnName("precioTotal");
+            entity.Property(e => e.Numero).HasColumnName("numero");
 
             entity.HasOne(d => d.IdClienteNavigation).WithMany(p => p.Venta)
                 .HasForeignKey(d => d.IdCliente)

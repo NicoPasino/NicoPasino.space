@@ -25,7 +25,7 @@ namespace NicoPasino.Controllers
                 if (objeto == null) throw new DataException("Datos inválidos, por favor revisar.");
 
                 var ok = await _ventaServicio.Create(objeto);
-                if (ok) return Ok(new { success = true, message = "Datos recibidos." });
+                if (ok) return Ok(new { ok = true, success = true });
                 else throw new Exception();
             }
             catch (DataException ex) {
@@ -39,7 +39,7 @@ namespace NicoPasino.Controllers
         [HttpDelete("Ventas/{id}")]
         public async Task<IActionResult> EliminarVenta(int id) {
             var res = await _ventaServicio.Enable(id, false);
-            return Ok(new { success = true, message = "Datos recibidos." });
+            return Ok(new { success = true });
         }
 
 

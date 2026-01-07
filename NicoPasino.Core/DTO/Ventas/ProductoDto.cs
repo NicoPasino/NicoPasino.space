@@ -20,7 +20,7 @@
 
         public bool Activo { get; set; }
 
-        //public virtual Categoria IdCategoriaNavigation { get; set; }
+        public string? Categoria { get; set; } // propiedad calculada
 
         //public virtual ICollection<Ventaporproducto> Ventaporproducto { get; set; } = new List<Ventaporproducto>();
 

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NicoPasino.Core.DTO.Ventas;
 using NicoPasino.Core.Interfaces;
 using NicoPasino.Core.Interfaces.Ventas;
+using NicoPasino.Core.Mapper;
 using NicoPasino.Core.Modelos.Ventas;
 using NicoPasino.Infra.Data;
 using NicoPasino.Infra.Repositorio;
@@ -31,6 +32,8 @@ namespace NicoPasino
 
             DotEnv.Load(); // leer .env
 
+            MappingConfig.VentasMappings();
+
             // conexión a películas
             var moviesdb = Environment.GetEnvironmentVariable("movies2");
             builder.Services.AddDbContext<moviesdbContext>(options =>
@@ -54,9 +57,9 @@ namespace NicoPasino
             builder.Services.AddScoped<IMovieServicio, MovieServicio>();
             builder.Services.AddScoped<IGeneroServicio, GeneroServicio>();
 
-
             builder.Services.AddScoped<IServicioGenerico<Producto, ProductoDto>, ProductoServicio>();
             builder.Services.AddScoped<IServicioGenerico<Venta, VentaDto>, VentaServicio>();
+            builder.Services.AddScoped<IServicioGenerico<Cliente, ClienteDto>, ClienteServicio>();
 
             // cambiar texto de validación de la vista
             builder.Services.AddRazorPages()
@@ -100,7 +103,7 @@ namespace NicoPasino
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Movies}/{action=Index}/{id?}")
+                pattern: "{controller=Ventas}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
             app.Run();

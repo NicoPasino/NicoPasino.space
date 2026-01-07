@@ -11,9 +11,11 @@ namespace NicoPasino.Controllers
     {
         private readonly IServicioGenerico<Producto, ProductoDto> _productoServicio;
         private readonly IServicioGenerico<Venta, VentaDto> _ventaServicio;
-        public VentasController(IServicioGenerico<Producto, ProductoDto> pServicio, IServicioGenerico<Venta, VentaDto> vServicio) {
+        private readonly IServicioGenerico<Cliente, ClienteDto> _clienteServicio;
+        public VentasController(IServicioGenerico<Producto, ProductoDto> pServicio, IServicioGenerico<Venta, VentaDto> vServicio, IServicioGenerico<Cliente, ClienteDto> clienteServicio) {
             _productoServicio = pServicio;
             _ventaServicio = vServicio;
+            _clienteServicio = clienteServicio;
         }
 
 

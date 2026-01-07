@@ -1,20 +1,18 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Mapster;
+using Microsoft.IdentityModel.Tokens;
 using NicoPasino.Core.DTO.Ventas;
 using NicoPasino.Core.Errores;
 using NicoPasino.Core.Interfaces;
 using NicoPasino.Core.Interfaces.Ventas;
-using NicoPasino.Core.Mapper.Ventas;
 using NicoPasino.Core.Modelos.Ventas;
+
 
 namespace NicoPasino.Servicios.Servicios.Ventas
 {
     public class ProductoServicio : IServicioGenerico<Producto, ProductoDto>
     {
         private readonly IRepositorioGenericoVentas<Producto> _repoG;
-        //private readonly IUnitOfWork _uow;
-
-        public ProductoServicio(/*IUnitOfWork uow,*/ IRepositorioGenericoVentas<Producto> repoG) {
-            //_uow = uow ?? throw new ArgumentNullException(nameof(uow));
+        public ProductoServicio(IRepositorioGenericoVentas<Producto> repoG) {
             _repoG = repoG ?? throw new ArgumentNullException(nameof(repoG));
         }
 
@@ -23,14 +21,12 @@ namespace NicoPasino.Servicios.Servicios.Ventas
                 var objsDb = await _repoG.ListarAsync(
                     filtro: m => m.Activo == activo
                     //, orden: q => q.OrderByDescending(m => m.FechaCreacion)
-                    //, incluir: "IdCategoriaNavigation"
+                    , incluir: "IdCategoriaNavigation"
                 );
 
-                //Console.Write(objsDb);
-
-                // si hay películas...
+                // si hay...
                 if (objsDb != null && objsDb.Any()) {
-                    var objsDto = ProductoMapper.ConvertToDtoList(objsDb);
+                    var objsDto = objsDb.Adapt<IEnumerable<ProductoDto>>();
                     return objsDto;
                 }
                 return Enumerable.Empty<ProductoDto>();
@@ -50,13 +46,13 @@ namespace NicoPasino.Servicios.Servicios.Ventas
 
                 var objsDb = await _repoG.ListarAsync(
                     filtro: m => m.Activo && (string.IsNullOrEmpty(nombre) || m.Nombre.Contains(nombre))
-                    //orden: q => q.OrderByDescending(m => m.FechaCreacion),
-                    //incluir: "IdCategoriaNavigation.Nombre"
+                    //orden: q => q.OrderByDescending(m => m.FechaCreacion)
+                    , incluir: "IdCategoriaNavigation"
                 );
 
                 // si hay...
                 if (objsDb != null && objsDb.Any()) {
-                    var objsDto = ProductoMapper.ConvertToDtoList(objsDb);
+                    var objsDto = objsDb.Adapt<IEnumerable<ProductoDto>>();
                     return objsDto;
                 }
                 return Enumerable.Empty<ProductoDto>();
@@ -72,13 +68,13 @@ namespace NicoPasino.Servicios.Servicios.Ventas
 
                 var objsDb = await _repoG.ListarAsync(
                     filtro: m => m.Activo && (m.IdCategoriaNavigation != null && m.IdCategoriaNavigation.Id == idCategoria)
-                    //orden: q => q.OrderByDescending(m => m.FechaCreacion),
-                    //incluir: "IdCategoriaNavigation.Nombre"
+                    //orden: q => q.OrderByDescending(m => m.FechaCreacion)
+                    , incluir: "IdCategoriaNavigation"
                 );
 
                 // si hay...
                 if (objsDb != null && objsDb.Any()) {
-                    var objsDto = ProductoMapper.ConvertToDtoList(objsDb);
+                    var objsDto = objsDb.Adapt<IEnumerable<ProductoDto>>();
                     return objsDto;
                 }
 
@@ -96,14 +92,13 @@ namespace NicoPasino.Servicios.Servicios.Ventas
             if (id <= 0) throw new ArgumentException("Id no válido");
             var objDb = await _repoG.GetAsync(
                 filtro: m => m.IdPublica == id
-                //incluir: "IdCategoriaNavigation.Nombre"
+                , incluir: "IdCategoriaNavigation"
             );
 
             if (objDb != null) {
-                var objDto = ProductoMapper.ConvertToDto(objDb);
+                var objDto = objDb.Adapt<ProductoDto>();
                 return objDto;
             }
-
             return new ProductoDto();
         }
 
@@ -113,30 +108,24 @@ namespace NicoPasino.Servicios.Servicios.Ventas
             // TODO: otras validaciones
 
             obj.IdPublica = random.Next(1, 9999999);
-            var movie = ProductoMapper.ConvertToModel(obj);
+            var objeto = obj.Adapt<Producto>();
 
-            movie.FechaCreacion = DateTime.UtcNow;
-            movie.Activo = true;
+            objeto.FechaCreacion = DateTime.UtcNow;
+            objeto.Activo = true;
 
-            var res = await _repoG.Add(movie);
+            // Asegurar que se use sólo la FK y evitar que EF intente insertar una nueva Categoria
+            objeto.IdCategoria = obj.IdCategoria;
+            objeto.IdCategoriaNavigation = null;
+
+            var res = await _repoG.Add(objeto);
 
             return (res != null);
-
-            // Agregar Categoría si se añadió correctamente?
-            /*var genreIds = obj.genreIds;
-            if (genreIds != null && genreIds.Any() && res != null) {
-                await GuardarMovieGenre(movie.Id, genreIds);
-                await _uow.SaveChangesAsync();
-                return true;
-            }
-            else
-                return false;
-            */
         }
 
         public async Task<bool> Update(ProductoDto obj) {
             if (obj == null) throw new DataException("No se recibió ningún dato.");
             else if (obj.IdPublica == null) throw new DataException("No se recibió ningún ID.");
+            else if (obj.IdCategoria <= 0) throw new DataException("La categoría no es válida."); // TODO:
             // TODO: comparar con datos originales
             //var movieOriginal = await _servicio.GetById((int)objeto.idPublica); 
             //if (objeto == movieOriginal) throw new MovieDataException("Se recibieron datos sin cambios, No se actualizó."); // FIXME:
@@ -148,25 +137,21 @@ namespace NicoPasino.Servicios.Servicios.Ventas
             if (objDb == null) throw new DataException("Objeto original no encontrada.");
 
             // mapear
-            var objMapped = ProductoMapper.ConvertToModel(obj);
+            //var objMapped = ProductoMapper.ConvertToModel(obj);
+            var objMapped = obj.Adapt<Producto>(); // TODO:
+
+            // Asegurar que se use sólo la FK y evitar que EF intente insertar una nueva Categoria
+            objMapped.IdCategoria = obj.IdCategoria;
+            objMapped.IdCategoriaNavigation = null;
+
             objMapped.Id = objDb.Id;
-            objMapped.FechaModificacion = objDb.FechaModificacion; // TODO: ??
+            objMapped.FechaCreacion = objDb.FechaCreacion;
+            objMapped.FechaModificacion = DateTime.UtcNow;
 
             // subir
             var res = await _repoG.Update(objMapped);
             if (res > 0) return true;
             else throw new UpdateException("No pudo actualizar en la base de datos.");
-
-            // Agregar los géneros (si se añadió la Película correctamente)
-            /*var genreIds = obj.genreIds;
-            if (genreIds != null && genreIds.Any() && res != null) { // TODO:
-                await GuardarMovieGenre(objDb.Id, genreIds);
-                await _uow.SaveChangesAsync();
-                return true;
-            }
-            else throw new UpdateException("La Película no pudo actualizar en la base de datos.");*/
-            //else throw new MovieUpdateException("No se pudieron actualizar los géneros.");
-
         }
 
         public async Task<bool> Enable(int id, bool estado) {
@@ -193,17 +178,17 @@ namespace NicoPasino.Servicios.Servicios.Ventas
             return true;
         }*/
 
-        /*public async Task GuardarMovieGenre(int movieId, IEnumerable<int> genreIds) {
+        /*public async Task GuardarProductoCategoria(int productoId, IEnumerable<int> genreIds) {
             // borrar géneros anteriores si existen
-            var movieGenres = await _repoMovieGenres.ListarAsync(filtro: mg => mg.MovieId == movieId);
-            if (movieGenres != null) {
-                await _repoMovieGenres.DeleteRange(movieGenres);
+            var productoGenres = await _repoMovieGenres.ListarAsync(filtro: mg => mg.MovieId == productoId);
+            if (productoGenres != null) {
+                await _repoMovieGenres.DeleteRange(productoGenres);
                 await _uow.SaveChangesAsync();
             }
 
             // agregar nuevos géneros
             foreach (var id in genreIds) {
-                var gen = new Moviegenres { MovieId = movieId, GenreId = id };
+                var gen = new Moviegenres { MovieId = productoId, GenreId = id };
                 await _repoMovieGenres.Add(gen);
             }
             await _uow.SaveChangesAsync();
