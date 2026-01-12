@@ -22,7 +22,7 @@ namespace NicoPasino
             builder.Services.AddCors(options => {
                 options.AddPolicy(name: misReglasCORS,
                                   policy => {
-                                      policy.WithOrigins("http://localhost:3000", "https://nicopasino.space", "https://sistema-ventas.nicopasino.space", "http://localhost:5173", "https://localhost:5173")
+                                      policy.WithOrigins("https://nicopasino.space", "https://sistema-ventas.nicopasino.space", "https://notas.nicopasino.space", "http://localhost:5173", "https://localhost:5173", "http://localhost:3000")
                                             .AllowAnyHeader()
                                             .AllowAnyMethod();
                                   });
@@ -103,7 +103,7 @@ namespace NicoPasino
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Ventas}/{action=Index}/{id?}")
+                pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
             app.Run();

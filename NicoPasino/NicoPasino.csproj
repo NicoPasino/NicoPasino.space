@@ -25,4 +25,8 @@
     <ProjectReference Include="..\NicoPasino.Servicios\NicoPasino.Servicios.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\imgs\" />
+  </ItemGroup>
+
 </Project>

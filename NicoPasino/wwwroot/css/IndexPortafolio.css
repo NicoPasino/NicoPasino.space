@@ -1,0 +1,279 @@
+﻿:root {
+    --aqua: #0ff;
+    --aqua5: #0ff5;
+    --aquaSubt: rgb(0, 134, 134);
+    --transp: rgba(0, 0, 0, 0);
+    --transpHover1: rgba(128, 128, 128, 0.05);
+    --transpHover2: rgba(128, 128, 128, 0.08);
+    --azul-galactico: #00bfff; /* titulo sec */
+    --gris-espacial: #ccc; /* texto normal */
+    --gris-humo: #1a1a1a; /* fondo alt */
+    --lila-futurista: #c084fc; /* botones */
+    --verde-laser: #39ff14; /* enlaces */
+}
+
+body {
+    margin: 0;
+    padding: 1rem;
+    font-family: 'Orbitron', sans-serif;
+    background-color: black;
+    background: radial-gradient(ellipse at bottom, #0d0d0d 0%, #000000 100%);
+    color: #fff;
+    overflow-x: hidden;
+}
+
+.stars {
+    background: url('/imgs/stardust.png');
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 200%;
+    z-index: -1;
+    animation: twinkle 200s linear infinite;
+}
+
+@keyframes twinkle {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-1000px);
+    }
+}
+
+.astronautaCV {
+    position: fixed;
+    top: 0;
+    right: 0px;
+    z-index: 1;
+}
+
+    .astronautaCV a img {
+        height: 150px;
+        cursor: pointer;
+        animation: astron 3s alternate infinite;
+    }
+
+        .astronautaCV a img:hover {
+            filter: drop-shadow(2px 2px 15px rgba(255, 255, 255, 0.278));
+        }
+
+@keyframes astron {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(10px);
+    }
+}
+
+
+
+header {
+    padding-block: 12rem;
+    text-align: center;
+    font-size: 2.5rem;
+    color: var(--aqua);
+    text-shadow: 0 0 10px var(--aqua);
+    animation: 4s zoomHeader infinite alternate;
+}
+
+@keyframes zoomHeader {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.03);
+    }
+}
+
+
+
+
+.about {
+    margin: 2rem auto;
+    max-width: 800px;
+    min-height: 210px;
+    background-color: var(--transpHover2);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px var(--aqua5);
+    display: flex;
+    justify-content: space-between;
+}
+
+    .about .aboutCont {
+        margin-block: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    .about h2 {
+        text-align: center;
+        color: var(--azul-galactico);
+        margin-bottom: 2rem;
+    }
+
+    .about .aboutText {
+        word-spacing: 5px;
+        text-align: center;
+    }
+
+/* Slider */
+.changeBtn {
+    padding-inline: 15px;
+    height: auto;
+    transition: 0.5s;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: monospace;
+    font-size: 3em;
+    font-weight: 900;
+    color: rgb(92, 92, 92);
+    border-radius: 15px;
+}
+
+    .changeBtn:hover {
+        color: var(--aqua);
+        text-shadow: 0 0 10px var(--aqua);
+    }
+
+    .changeBtn.I:hover {
+        background: linear-gradient(270deg, var(--transp) 0%, var(--transpHover1) 30%, var(--transpHover2) 100%);
+    }
+
+    .changeBtn.D:hover {
+        background: linear-gradient(90deg, var(--transp) 0%, var(--transpHover1) 30%, var(--transpHover2) 100%);
+    }
+
+
+.iconos {
+    margin-block: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+    .iconos img {
+        height: 50px;
+        margin: 10px;
+        transition: 1s;
+    }
+
+        .iconos img:hover {
+            transform: scale(1.1);
+        }
+
+
+
+
+.projects {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.card {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    /* padding: 0.5rem 1.5rem 1.5rem 1.5rem; */
+    box-shadow: 0 0 10px var(--aqua5);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+    .card:hover {
+        transform: scale(1.05);
+        /* backdrop-filter: blur(0.5px); */
+    }
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+    padding: 1rem;
+    border-radius: 12px 12px 0 0;
+    background: linear-gradient(0deg, var(--transp) 0%, rgba(0, 0, 0, 0.5) 15%, black 100%);
+}
+
+    .cardHeader .cardTitle {
+        margin: 0;
+        color: var(--azul-galactico);
+        font-size: larger;
+    }
+
+.card .cardIcons {
+    display: flex;
+    gap: 15px;
+}
+
+.cardIcons .small {
+    height: 25px;
+}
+
+.card .cardText {
+    padding: 0.3rem 1rem 1rem 1.3rem;
+    font-size: smaller;
+    color: var(--gris-espacial);
+}
+
+
+footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1rem;
+    color: #ccc;
+}
+
+.social-icons a {
+    margin: 0 0.5rem;
+    text-decoration: none;
+    font-size: 1.5rem;
+}
+
+
+.social-icons a {
+    color: white;
+}
+
+    .social-icons a img {
+        margin: 5px;
+        height: 35px;
+        transition: 0.2s;
+        filter: drop-shadow(2px 2px 5px rgb(114, 114, 114));
+    }
+
+        .social-icons a img:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(5px 5px 5px rgb(62, 62, 62));
+        }
+
+/* BLUR */
+.fondo {
+    position: relative;
+}
+
+.blur {
+    backdrop-filter: blur(5px);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
