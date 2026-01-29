@@ -372,3 +372,5 @@ appsettings.json
 /NicoPasino/.env
 /desktop.ini
 /NicoPasino/wwwroot/imgs
+/NicoPasino/wwwroot/codes
+/NicoPasino/wwwroot/notes

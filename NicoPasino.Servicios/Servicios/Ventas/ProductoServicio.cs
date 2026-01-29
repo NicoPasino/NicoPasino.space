@@ -1,9 +1,7 @@
 ﻿using Mapster;
-using Microsoft.IdentityModel.Tokens;
 using NicoPasino.Core.DTO.Ventas;
 using NicoPasino.Core.Errores;
 using NicoPasino.Core.Interfaces;
-using NicoPasino.Core.Interfaces.Ventas;
 using NicoPasino.Core.Modelos.Ventas;
 
 
@@ -37,7 +35,7 @@ namespace NicoPasino.Servicios.Servicios.Ventas
         }
 
         public async Task<IEnumerable<ProductoDto>> GetAll(string nombre) {
-            if (nombre.IsNullOrEmpty()) throw new ArgumentException("Texto vacío o no válido.");
+            if (nombre == null) throw new ArgumentException("Texto vacío o no válido.");
             // TODO: otras validaciones
 
             try {
@@ -134,7 +132,7 @@ namespace NicoPasino.Servicios.Servicios.Ventas
 
             // obtener obj original
             var objDb = await _repoG.GetAsync(filtro: x => x.IdPublica == obj.IdPublica/*, incluir: "IdCategoriaNavigation"*/);
-            if (objDb == null) throw new DataException("Objeto original no encontrada.");
+            if (objDb == null) throw new DataException("Objeto original no encontrado.");
 
             // mapear
             //var objMapped = ProductoMapper.ConvertToModel(obj);

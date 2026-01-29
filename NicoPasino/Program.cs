@@ -2,7 +2,6 @@ using dotenv.net;
 using Microsoft.EntityFrameworkCore;
 using NicoPasino.Core.DTO.Ventas;
 using NicoPasino.Core.Interfaces;
-using NicoPasino.Core.Interfaces.Ventas;
 using NicoPasino.Core.Mapper;
 using NicoPasino.Core.Modelos.Ventas;
 using NicoPasino.Infra.Data;
@@ -17,41 +16,36 @@ namespace NicoPasino
         public static void Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);
 
+            DotEnv.Load(); // leer .env
+
             // definir reglas CORS
             var misReglasCORS = "_misReglasCORS";
+            var acceptedOrigins = Environment.GetEnvironmentVariable("ACCEPTED_ORIGINS")?.Split(',') ?? [""];
             builder.Services.AddCors(options => {
-                options.AddPolicy(name: misReglasCORS,
-                                  policy => {
-                                      policy.WithOrigins("https://nicopasino.space", "https://sistema-ventas.nicopasino.space", "https://notas.nicopasino.space", "http://localhost:5173", "https://localhost:5173", "http://localhost:3000")
-                                            .AllowAnyHeader()
-                                            .AllowAnyMethod();
-                                  });
+                options.AddPolicy(name: misReglasCORS, policy => { policy.WithOrigins(acceptedOrigins).AllowAnyHeader().AllowAnyMethod(); });
             });
 
             builder.Services.AddControllersWithViews();
 
-            DotEnv.Load(); // leer .env
-
+            // Configuraciones para Mapster
             MappingConfig.VentasMappings();
 
             // conexión a películas
-            var moviesdb = Environment.GetEnvironmentVariable("movies2");
+            var moviesdb = Environment.GetEnvironmentVariable("movies");
             builder.Services.AddDbContext<moviesdbContext>(options =>
                 options.UseMySql(moviesdb, new MySqlServerVersion(new Version(8, 0, 39)))
             );
 
             // conexión a ventas
-            var ventasdb = Environment.GetEnvironmentVariable("ventas2");
+            var ventasdb = Environment.GetEnvironmentVariable("ventas");
             builder.Services.AddDbContext<ventasdbContext>(options =>
                 options.UseMySql(ventasdb, new MySqlServerVersion(new Version(8, 0, 39)))
             );
 
-
             // permitir inyección (Repositorio => conexión con dbContext)
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped(typeof(IRepositorioGenerico<>), typeof(RepositorioGenerico<>));
+            builder.Services.AddScoped<IUnitOfWorkMovie, UnitOfWorkMovie>();
+            builder.Services.AddScoped(typeof(IRepositorioGenerico<>), typeof(RepositorioGenericoMovies<>));
             builder.Services.AddScoped(typeof(IRepositorioGenericoVentas<>), typeof(RepositorioGenericoVentas<>));
-
 
             // Servicios
             builder.Services.AddScoped<IMovieServicio, MovieServicio>();

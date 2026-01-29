@@ -2,7 +2,6 @@
 using NicoPasino.Core.DTO.Ventas;
 using NicoPasino.Core.Errores;
 using NicoPasino.Core.Interfaces;
-using NicoPasino.Core.Interfaces.Ventas;
 using NicoPasino.Core.Modelos.Ventas;
 
 namespace NicoPasino.Servicios.Servicios.Ventas

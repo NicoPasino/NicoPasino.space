@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NicoPasino.Core.DTO.Ventas;
-using NicoPasino.Core.Interfaces.Ventas;
+using NicoPasino.Core.Interfaces;
 using NicoPasino.Core.Modelos.Ventas;
 
 namespace NicoPasino.Controllers
