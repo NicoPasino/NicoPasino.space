@@ -1,5 +1,7 @@
 ﻿using Mapster;
+using NicoPasino.Core.DTO.Notas;
 using NicoPasino.Core.DTO.Ventas;
+using NicoPasino.Core.Modelos.Notas;
 using NicoPasino.Core.Modelos.Ventas;
 
 namespace NicoPasino.Core.Mapper
@@ -21,6 +23,12 @@ namespace NicoPasino.Core.Mapper
 
             TypeAdapterConfig<Cliente, ClienteDto>.NewConfig()
                 .Map(dest => dest.NroCompras, src => src.Venta.Count());
+        }
+
+        public static void NotasMappings() {
+            TypeAdapterConfig<Cards, CardsDto>.NewConfig()
+                .TwoWays()
+                .Map(dest => dest.Id, src => src.IdPublica);
         }
     }
 }

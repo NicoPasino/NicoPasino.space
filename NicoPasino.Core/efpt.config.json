@@ -1,6 +1,6 @@
 ﻿{
    "CodeGenerationMode": 5,
-   "ContextClassName": "ventasdbContext",
+   "ContextClassName": "notasdbContext",
    "ContextNamespace": null,
    "FilterSchemas": false,
    "IncludeConnectionString": false,
@@ -8,7 +8,7 @@
    "MinimumProductVersion": "2.6.1248",
    "ModelNamespace": null,
    "OutputContextPath": null,
-   "OutputPath": "Modelos\/Ventas",
+   "OutputPath": "Modelos\/Notas",
    "PluralRules": null,
    "PreserveCasingWithRegex": true,
    "ProjectRootNamespace": "NicoPasino.Core",
@@ -19,23 +19,7 @@
    "T4TemplatePath": null,
    "Tables": [
       {
-         "Name": "categoria",
-         "ObjectType": 0
-      },
-      {
-         "Name": "cliente",
-         "ObjectType": 0
-      },
-      {
-         "Name": "producto",
-         "ObjectType": 0
-      },
-      {
-         "Name": "venta",
-         "ObjectType": 0
-      },
-      {
-         "Name": "ventaporproducto",
+         "Name": "cards",
          "ObjectType": 0
       }
    ],

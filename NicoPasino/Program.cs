@@ -1,12 +1,15 @@
 using dotenv.net;
 using Microsoft.EntityFrameworkCore;
+using NicoPasino.Core.DTO.Notas;
 using NicoPasino.Core.DTO.Ventas;
 using NicoPasino.Core.Interfaces;
 using NicoPasino.Core.Mapper;
+using NicoPasino.Core.Modelos.Notas;
 using NicoPasino.Core.Modelos.Ventas;
 using NicoPasino.Infra.Data;
 using NicoPasino.Infra.Repositorio;
 using NicoPasino.Servicios.Servicios.Movies;
+using NicoPasino.Servicios.Servicios.Notas;
 using NicoPasino.Servicios.Servicios.Ventas;
 
 namespace NicoPasino
@@ -29,6 +32,7 @@ namespace NicoPasino
 
             // Configuraciones para Mapster
             MappingConfig.VentasMappings();
+            MappingConfig.NotasMappings();
 
             // conexión a películas
             var moviesdb = Environment.GetEnvironmentVariable("movies");
@@ -42,10 +46,18 @@ namespace NicoPasino
                 options.UseMySql(ventasdb, new MySqlServerVersion(new Version(8, 0, 39)))
             );
 
+            // conexión a notas
+            var notasdb = Environment.GetEnvironmentVariable("notas");
+            builder.Services.AddDbContext<notasdbContext>(options =>
+                options.UseMySql(notasdb, new MySqlServerVersion(new Version(8, 0, 39))) // version de aws?
+            );
+
+
             // permitir inyección (Repositorio => conexión con dbContext)
             builder.Services.AddScoped<IUnitOfWorkMovie, UnitOfWorkMovie>();
             builder.Services.AddScoped(typeof(IRepositorioGenerico<>), typeof(RepositorioGenericoMovies<>));
             builder.Services.AddScoped(typeof(IRepositorioGenericoVentas<>), typeof(RepositorioGenericoVentas<>));
+            builder.Services.AddScoped(typeof(IRepositorioGenerico<Cards>), typeof(RepositorioGenericoNotes<Cards>));
 
             // Servicios
             builder.Services.AddScoped<IMovieServicio, MovieServicio>();
@@ -54,6 +66,8 @@ namespace NicoPasino
             builder.Services.AddScoped<IServicioGenerico<Producto, ProductoDto>, ProductoServicio>();
             builder.Services.AddScoped<IServicioGenerico<Venta, VentaDto>, VentaServicio>();
             builder.Services.AddScoped<IServicioGenerico<Cliente, ClienteDto>, ClienteServicio>();
+
+            builder.Services.AddScoped<IServicioGenerico<Cards, CardsDto>, NotasServicio>();
 
             // cambiar texto de validación de la vista
             builder.Services.AddRazorPages()
