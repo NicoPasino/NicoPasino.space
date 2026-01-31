@@ -1,30 +1,25 @@
 ﻿{
    "CodeGenerationMode": 5,
-   "ContextClassName": "moviesdbContext",
+   "ContextClassName": "notasdbContext",
    "ContextNamespace": "NicoPasino.Infra.Data",
    "FilterSchemas": false,
    "IncludeConnectionString": false,
-   "MinimumProductVersion": "2.6.1166",
-   "ModelNamespace": "NicoPasino.Core.Modelos.MoviesMySql",
+   "IrregularWords": null,
+   "MinimumProductVersion": "2.6.1248",
+   "ModelNamespace": "NicoPasino.Core.Modelos.Notas",
    "OutputContextPath": "Data",
    "OutputPath": "",
+   "PluralRules": null,
    "PreserveCasingWithRegex": true,
    "ProjectRootNamespace": "",
    "Schemas": null,
    "SelectedHandlebarsLanguage": 2,
    "SelectedToBeGenerated": 1,
+   "SingularRules": null,
    "T4TemplatePath": null,
    "Tables": [
       {
-         "Name": "genre",
-         "ObjectType": 0
-      },
-      {
-         "Name": "movie",
-         "ObjectType": 0
-      },
-      {
-         "Name": "moviegenres",
+         "Name": "cards",
          "ObjectType": 0
       }
    ],

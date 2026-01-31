@@ -1,5 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using NicoPasino.Core.DTO.Movies;
+﻿using NicoPasino.Core.DTO.Movies;
 using NicoPasino.Core.Errores.Movies;
 using NicoPasino.Core.Interfaces;
 using NicoPasino.Core.Mapper.Movies;
@@ -11,9 +10,9 @@ namespace NicoPasino.Servicios.Servicios.Movies
     {
         private readonly IRepositorioGenerico<Movie> _repoG;
         private readonly IRepositorioGenerico<Moviegenres> _repoMovieGenres;
-        private readonly IUnitOfWork _uow;
+        private readonly IUnitOfWorkMovie _uow;
 
-        public MovieServicio(IUnitOfWork uow, IRepositorioGenerico<Movie> repoG, IRepositorioGenerico<Moviegenres> repoMovieGenres) {
+        public MovieServicio(IUnitOfWorkMovie uow, IRepositorioGenerico<Movie> repoG, IRepositorioGenerico<Moviegenres> repoMovieGenres) {
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
             _repoG = repoG ?? throw new ArgumentNullException(nameof(repoG));
             _repoMovieGenres = repoMovieGenres ?? throw new ArgumentNullException(nameof(repoMovieGenres));
@@ -40,7 +39,7 @@ namespace NicoPasino.Servicios.Servicios.Movies
         }
 
         public async Task<IEnumerable<MovieDto>> GetAll(string titulo) {
-            if (titulo.IsNullOrEmpty()) throw new ArgumentException("Texto vacío o no válido.");
+            if (titulo == null) throw new ArgumentException("Texto vacío o no válido.");
             // TODO: otras validaciones
 
             try {

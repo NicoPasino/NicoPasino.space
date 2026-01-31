@@ -6,10 +6,10 @@ namespace NicoPasino.Servicios.Servicios.Movies
 {
     public class GeneroServicio : IGeneroServicio
     {
-        private readonly IUnitOfWork _uow;
+        private readonly IUnitOfWorkMovie _uow;
         private readonly IRepositorioGenerico<Genre> _repo;
 
-        public GeneroServicio(IUnitOfWork uow) {
+        public GeneroServicio(IUnitOfWorkMovie uow) {
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
             _repo = _uow.Repositorio<Genre>() ?? throw new ArgumentNullException(nameof(_repo));
         }

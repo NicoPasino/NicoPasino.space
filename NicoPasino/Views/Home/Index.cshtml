@@ -1,7 +1,126 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Inicio";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+<link rel="stylesheet" href="~/css/IndexPortafolio.css" />
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+
+
+<div class="stars"></div>
+<div class="astronautaCV">
+    <a href="~/imgs/CV-Nicolas-Pasino.pdf" target="_blank"><img src="~/imgs/verCV.png" alt="ver mi CV"></a>
 </div>
+
+<!-- Nombre -->
+<header>> Nicolás Pasino <</header>
+
+<!-- Sobre Mí -->
+<section class="about">
+    <div class="changeBtn I" onclick="changeDiv()"><</div>
+    <div class="aboutCont">
+        <div class="cont" id="cont1">
+            <h2>Sobre mí</h2>
+            <p class="aboutText">Hola, soy Nicolás, un desarrollador full-stack apasionado por crear soluciones que no solo funcionen, sino que brillen en la oscuridad del espacio digital. Este portafolio es mi pequeña nave espacial para mostrarte mis proyectos más destacados. ¡Bienvenido a bordo!</p>
+        </div>
+        <div class="cont iconos" id="cont2">
+            <img src="~/imgs/icons/HTML5.svg" alt="HTML" title="HTML">
+            <img src="~/imgs/icons/CSS.svg" alt="CSS" title="CSS">
+            <img src="~/imgs/icons/JavaScript.svg" alt="JavaScript" title="JavaScript">
+            <img src="~/imgs/icons/Typescript.svg" alt="TypeScript" title="TypeScript">
+            <img src="~/imgs/icons/Bootstrap.svg" alt="Bootstrap" title="Bootstrap">
+            <img src="~/imgs/icons/React.svg" alt="React" title="React / Native">
+            <img src="~/imgs/icons/Nodejs.svg" alt="Node.js" title="Node.js">
+            <img src="~/imgs/icons/NET.svg" alt=".NET" title=".NET">
+            <img src="~/imgs/icons/AWS.svg" alt="AWS" title="AWS">
+            <img src="~/imgs/icons/Docker.svg" alt="Docker" title="Docker">
+            <img src="~/imgs/icons/mysql.svg" alt="MySQL" title="MySQL">
+            <img src="~/imgs/icons/Git.svg" alt="Git" title="Git">
+        </div>
+    </div>
+    <div class="changeBtn D" onclick="changeDiv()">></div>
+</section>
+
+<!-- Proyectos -->
+<section class="projects">
+
+    <div class="card" onclick="window.location = 'https://sistema-ventas.nicopasino.space'">
+        <div class="cardHeader">
+            <p class="cardTitle"> Sistema de Ventas </p>
+            <div class="cardIcons">
+                <img class="small" src="~/imgs/icons/React.svg" alt="React.js" title="React.js">
+                <img class="small" src="~/imgs/icons/NET.svg" alt=".NET" title="ASP.NET Core MVC">
+                <img class="small" src="~/imgs/icons/mysql.svg" alt="MySQL" title="MySQL">
+            </div>
+        </div>
+        <p class="cardText"> Gestiona tus productos y ventas a otro nivel.</p>
+    </div>
+
+    <div class="card" onclick="window.location = 'https://nicopasino.space/movies'">
+        <div class="cardHeader">
+            <p class="cardTitle"> Películas </p>
+            <div class="cardIcons">
+                <!-- <img class="small" src="~/imgs/icons/Nodejs.svg" alt="Node.js" title="Node.js"> -->
+                <img class="small" src="~/imgs/icons/NET.svg" alt=".NET" title="ASP.NET Core MVC">
+                <img class="small" src="~/imgs/icons/mysql.svg" alt="MySQL" title="MySQL">
+            </div>
+        </div>
+        <p class="cardText"> Explora el cine del cosmos sin necesidad de un telescopio.</p>
+    </div>
+
+    <div class="card" onclick="window.location = 'https://notas.nicopasino.space'">
+        <div class="cardHeader">
+            <p class="cardTitle"> Notas </p>
+            <div class="cardIcons">
+                <img class="small" src="~/imgs/icons/React.svg" alt="React.js" title="React Native">
+                <img class="small" src="~/imgs/icons/NET.svg" alt=".NET" title="ASP.NET Core MVC">
+                @* <img class="small" src="~/imgs/icons/Nodejs.svg" alt="Node.js" title="Node.js"> *@
+                <img class="small" src="~/imgs/icons/mysql.svg" alt="MySQL" title="MySQL">
+            </div>
+        </div>
+        <p class="cardText"> Tus ideas en órbita, siempre al alcance.</p>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="social-icons">
+        <a href="https://www.linkedin.com/in/nicolas-pasino"><img src="~/imgs/icons/Linkedin_w.svg" alt="Linkedin"></a>
+        <a href="https://github.com/NicoPasino"><img src="~/imgs/icons/github_w.svg" alt="Github"></a>
+        <a href="https://wa.me/5493515210862"><img src="~/imgs/icons/WhatsApp_w.svg" alt="Whatsapp"></a>
+        <a href="mailto:nico_pasino@hotmail.com"><img src="~/imgs/icons/mail_w.svg" alt="EMail"></a>
+    </div>
+</footer>
+
+<!-- Script -->
+<script>
+    const { protocol, hostname } = window.location;
+    const host = `${protocol}//${hostname}`;
+
+    function goTo(donde) {
+      window.location = host + donde;
+    }
+
+    const contenido1 = document.getElementById('cont1');
+    const contenido2 = document.getElementById('cont2');
+
+    let divActual = true;
+    class MostrarCont {
+      static cont1 () {
+        divActual = false;
+        contenido1.style.display = "";
+        contenido2.style.display = "none";
+      }
+      static cont2 () {
+        divActual = true;
+        contenido1.style.display = "none";
+        contenido2.style.display = "";
+      }
+    }
+    MostrarCont.cont1()
+
+    function changeDiv() {
+      if (divActual) MostrarCont.cont1()
+      else MostrarCont.cont2()
+    }
+
+</script>

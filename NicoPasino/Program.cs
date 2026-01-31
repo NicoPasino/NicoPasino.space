@@ -1,9 +1,16 @@
 using dotenv.net;
 using Microsoft.EntityFrameworkCore;
+using NicoPasino.Core.DTO.Notas;
+using NicoPasino.Core.DTO.Ventas;
 using NicoPasino.Core.Interfaces;
+using NicoPasino.Core.Mapper;
+using NicoPasino.Core.Modelos.Notas;
+using NicoPasino.Core.Modelos.Ventas;
 using NicoPasino.Infra.Data;
 using NicoPasino.Infra.Repositorio;
 using NicoPasino.Servicios.Servicios.Movies;
+using NicoPasino.Servicios.Servicios.Notas;
+using NicoPasino.Servicios.Servicios.Ventas;
 
 namespace NicoPasino
 {
@@ -11,21 +18,56 @@ namespace NicoPasino
     {
         public static void Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);
+
+            DotEnv.Load(); // leer .env
+
+            // definir reglas CORS
+            var misReglasCORS = "_misReglasCORS";
+            var acceptedOrigins = Environment.GetEnvironmentVariable("ACCEPTED_ORIGINS")?.Split(',') ?? [""];
+            builder.Services.AddCors(options => {
+                options.AddPolicy(name: misReglasCORS, policy => { policy.WithOrigins(acceptedOrigins).AllowAnyHeader().AllowAnyMethod(); });
+            });
+
             builder.Services.AddControllersWithViews();
 
-            // Conexión a db
-            DotEnv.Load(); // leer .env
-            var connectionString = Environment.GetEnvironmentVariable("DefaultConnection");
+            // Configuraciones para Mapster
+            MappingConfig.VentasMappings();
+            MappingConfig.NotasMappings();
+
+            // conexión a películas
+            var moviesdb = Environment.GetEnvironmentVariable("movies");
             builder.Services.AddDbContext<moviesdbContext>(options =>
-                options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 39)))
-            //options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesConnectionString")) // SQL Server
+                options.UseMySql(moviesdb, new MySqlServerVersion(new Version(8, 0, 39)))
             );
 
-            // permitir inyección
+            // conexión a ventas
+            var ventasdb = Environment.GetEnvironmentVariable("ventas");
+            builder.Services.AddDbContext<ventasdbContext>(options =>
+                options.UseMySql(ventasdb, new MySqlServerVersion(new Version(8, 0, 39)))
+            );
+
+            // conexión a notas
+            var notasdb = Environment.GetEnvironmentVariable("notas");
+            builder.Services.AddDbContext<notasdbContext>(options =>
+                options.UseMySql(notasdb, new MySqlServerVersion(new Version(8, 0, 39))) // version de aws?
+            );
+
+
+            // permitir inyección (Repositorio => conexión con dbContext)
+            builder.Services.AddScoped<IUnitOfWorkMovie, UnitOfWorkMovie>();
+            builder.Services.AddScoped(typeof(IRepositorioGenerico<>), typeof(RepositorioGenericoMovies<>));
+            builder.Services.AddScoped(typeof(IRepositorioGenericoVentas<>), typeof(RepositorioGenericoVentas<>));
+            builder.Services.AddScoped(typeof(IRepositorioGenerico<Cards>), typeof(RepositorioGenericoNotes<Cards>));
+
+            // Servicios
             builder.Services.AddScoped<IMovieServicio, MovieServicio>();
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IGeneroServicio, GeneroServicio>();
-            builder.Services.AddScoped(typeof(IRepositorioGenerico<>), typeof(RepositorioGenerico<>));
+
+            builder.Services.AddScoped<IServicioGenerico<Producto, ProductoDto>, ProductoServicio>();
+            builder.Services.AddScoped<IServicioGenerico<Venta, VentaDto>, VentaServicio>();
+            builder.Services.AddScoped<IServicioGenerico<Cliente, ClienteDto>, ClienteServicio>();
+
+            builder.Services.AddScoped<IServicioGenerico<Cards, CardsDto>, NotasServicio>();
 
             // cambiar texto de validación de la vista
             builder.Services.AddRazorPages()
@@ -60,16 +102,22 @@ namespace NicoPasino
             app.UseHttpsRedirection();
             app.UseRouting();
 
+            // Aplicar la política de CORS
+            app.UseCors(misReglasCORS);
+
             app.UseAuthorization();
 
 
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Movies}/{action=Index}/{id?}")
+                pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
             app.Run();
         }
     }
 }
+
+
+//options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesConnectionString")) // SQL Server
