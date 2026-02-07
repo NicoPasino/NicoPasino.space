@@ -17,13 +17,25 @@ namespace NicoPasino.Controllers
             }
         }
 
+        [HttpGet("Clientes/search/{campo}/{valor?}")]
+        public async Task<ActionResult> GetAllClientes(string campo, string? valor) {
+            try {
+                var objs = await _clienteServicio.GetAll(campo, valor);
+                return Ok(objs);
+            }
+            catch (DataException ex) {
+                return BadRequest(new { message = ex.Message }); // 400
+            }
+            catch (Exception ex) {
+                return new ObjectResult("Error de servidor: StatusCode 500") { StatusCode = 500 };
+            }
+        }
+
         [HttpGet("Clientes/{id}")]
         public async Task<ActionResult> GetCliente(int id) {
             try {
                 var obj = await _clienteServicio.GetById(id);
-                if (obj != null) {
-                    return Ok(obj);
-                }
+                if (obj != null) return Ok(obj);
                 else return NotFound(new { message = "Cliente no encontrado" }); // 404
             }
             catch (Exception ex) {
@@ -67,8 +79,16 @@ namespace NicoPasino.Controllers
 
         [HttpDelete("Clientes/{id}")]
         public async Task<IActionResult> EliminarCliente(int id) {
-            var res = await _clienteServicio.Enable(id, false);
-            return Ok(new { success = true });
+            try {
+                var res = await _clienteServicio.Enable(id, false);
+                return Ok(new { success = true });
+            }
+            catch (DataException ex) {
+                return BadRequest(new { message = ex.Message }); // 400
+            }
+            catch (Exception ex) {
+                return new ObjectResult("Error de servidor: StatusCode 500") { StatusCode = 500 };
+            }
         }
     }
 }
