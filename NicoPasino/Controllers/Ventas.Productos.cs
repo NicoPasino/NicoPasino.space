@@ -8,15 +8,42 @@ namespace NicoPasino.Controllers
     {
         [HttpGet("Productos")]
         public async Task<ActionResult> GetAllProductos() {
-            var objs = await _productoServicio.GetAll(true);
-            return Ok(objs);
+            try {
+                var objs = await _productoServicio.GetAll(true);
+                return Ok(objs);
+            }
+            catch (Exception ex) {
+                return new ObjectResult("Error de servidor: StatusCode 500") { StatusCode = 500 };
+            }
+        }
+
+        [HttpGet("Productos/search/{campo}/{valor?}")]
+        public async Task<ActionResult> GetAllProductos(string campo, string? valor) {
+            try {
+                var objs = await _productoServicio.GetAll(campo, valor);
+                return Ok(objs);
+            }
+            catch (DataException ex) {
+                return BadRequest(new { message = ex.Message }); // 400
+            }
+            catch (Exception ex) {
+                return new ObjectResult("Error de servidor: StatusCode 500") { StatusCode = 500 };
+            }
         }
 
         [HttpGet("Productos/{id}")]
         public async Task<ActionResult> GetProducto(int id) {
-            var obj = await _productoServicio.GetById(id);
-            if (obj?.IdPublica != null) return Ok(obj);
-            else return NotFound(new { message = "Producto no encontrado" }); // 404
+            try {
+                var obj = await _productoServicio.GetById(id);
+                if (obj?.IdPublica != null) return Ok(obj);
+                else return NotFound(new { message = "Producto no encontrado" }); // 404
+            }
+            catch (DataException ex) {
+                return BadRequest(new { message = ex.Message }); // 400
+            }
+            catch (Exception ex) {
+                return new ObjectResult("Error de servidor: StatusCode 500") { StatusCode = 500 };
+            }
         }
 
         [HttpPost("Productos")]
@@ -55,9 +82,17 @@ namespace NicoPasino.Controllers
 
         [HttpDelete("Productos/{id}")]
         public async Task<IActionResult> EliminarProducto(int id) {
-            var res = await _productoServicio.Enable(id, false);
-            if (res) return Ok();
-            else return new ObjectResult("Error de servidor: StatusCode 500. ") { StatusCode = 500 };
+            try {
+                var res = await _productoServicio.Enable(id, false);
+                if (res) return Ok();
+                else throw new Exception();
+            }
+            catch (DataException ex) {
+                return BadRequest(new { message = ex.Message }); // 400
+            }
+            catch (Exception ex) {
+                return new ObjectResult("Error de servidor: StatusCode 500") { StatusCode = 500 };
+            }
         }
     }
 }

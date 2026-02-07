@@ -3,6 +3,7 @@ using NicoPasino.Core.DTO.Ventas;
 using NicoPasino.Core.Errores;
 using NicoPasino.Core.Interfaces;
 using NicoPasino.Core.Modelos.Ventas;
+using System.Linq.Expressions;
 
 namespace NicoPasino.Servicios.Servicios.Ventas
 {
@@ -14,23 +15,79 @@ namespace NicoPasino.Servicios.Servicios.Ventas
         }
 
         public async Task<IEnumerable<ClienteDto>> GetAll(bool activo) {
-            try {
-                var objsDb = await _repoG.ListarAsync(
-                //filtro: m => m.Activo == activo
-                //, orden: q => q.OrderByDescending(m => m.FechaCreacion)
-                incluir: "Venta"
-                );
+            var objsDb = await _repoG.ListarAsync(
+            //filtro: m => m.Activo == activo
+            //, orden: q => q.OrderByDescending(m => m.FechaCreacion)
+            incluir: "Venta"
+            );
 
-                // si hay...
-                if (objsDb != null && objsDb.Any()) {
-                    var objsDto = objsDb.Adapt<IEnumerable<ClienteDto>>();
-                    return objsDto;
-                }
-                return Enumerable.Empty<ClienteDto>();
+            // si hay...
+            if (objsDb != null && objsDb.Any()) {
+                var objsDto = objsDb.Adapt<IEnumerable<ClienteDto>>();
+                return objsDto;
             }
-            catch (Exception ex) {
-                throw new Exception(ex.Message);
+            return Enumerable.Empty<ClienteDto>();
+        }
+
+        public async Task<IEnumerable<ClienteDto>> GetAll(string campo, string? valor) {
+            if (string.IsNullOrWhiteSpace(campo)) throw new ArgumentException("Campo de búsqueda no válido.");
+            campo = campo.Trim().ToLowerInvariant();
+            valor = valor?.Trim();
+
+            Expression<Func<Cliente, bool>> filtro = null;
+            Func<IQueryable<Cliente>, IOrderedQueryable<Cliente>> orden = null;
+
+            bool valorIsNull = string.IsNullOrEmpty(valor);
+            var vLower = valorIsNull ? string.Empty : valor!.ToLowerInvariant();
+
+            switch (campo) {
+                case "numero":
+                case "numerodesc":
+                    orden = (campo == "numero")
+                        ? new Func<IQueryable<Cliente>, IOrderedQueryable<Cliente>>(q => q.OrderBy(m => m.Documento))
+                        : new Func<IQueryable<Cliente>, IOrderedQueryable<Cliente>>(q => q.OrderByDescending(m => m.Documento));
+
+                    if (!valorIsNull) {
+                        filtro = m => m.Documento != null
+                                    && m.Documento.ToString().Contains(vLower);
+                    }
+                    break;
+
+                case "nombre":
+                case "nombredesc":
+                    orden = (campo == "nombre")
+                        ? new Func<IQueryable<Cliente>, IOrderedQueryable<Cliente>>(q => q.OrderBy(m => m.Nombre))
+                        : new Func<IQueryable<Cliente>, IOrderedQueryable<Cliente>>(q => q.OrderByDescending(m => m.Nombre));
+
+                    if (!valorIsNull) {
+                        filtro = m => m.Nombre != null
+                                    && m.Nombre.ToLower().Contains(vLower);
+                    }
+                    break;
+
+                case "otro":
+                case "otrodesc":
+                    orden = (campo == "otro")
+                        ? new Func<IQueryable<Cliente>, IOrderedQueryable<Cliente>>(q => q.OrderBy(m => m.Correo))
+                        : new Func<IQueryable<Cliente>, IOrderedQueryable<Cliente>>(q => q.OrderByDescending(m => m.Correo));
+
+                    if (!valorIsNull) {
+                        filtro = m => m.Correo != null
+                                   && m.Correo.ToLower().Contains(vLower);
+                    }
+                    break;
+
+                default:
+                    throw new DataException($"Campo de búsqueda '{campo}' no soportado. Campos soportados: numero(Documento), nombre, otro(Correo).");
             }
+
+            var objsDb = await _repoG.ListarAsync(filtro: filtro, incluir: "Venta", orden: orden);
+
+            if (objsDb != null && objsDb.Any()) {
+                var objsDto = objsDb.Adapt<IEnumerable<ClienteDto>>();
+                return objsDto;
+            }
+            else return Enumerable.Empty<ClienteDto>();
         }
 
         public async Task<ClienteDto> GetById(int dni) {
@@ -87,12 +144,6 @@ namespace NicoPasino.Servicios.Servicios.Ventas
 
         public Task<bool> Enable(int id, bool estado) {
             throw new NotImplementedException();
-        }
-        public async Task<IEnumerable<ClienteDto>> GetAll(int cod) {
-            throw new NotImplementedException("Método GetAll(int) de Cliente no configurado");
-        }
-        public Task<IEnumerable<ClienteDto>> GetAll(string Busqueda) {
-            throw new NotImplementedException("Método GetAll(string) de Cliente no configurado");
         }
 
         /*public async Task<bool> Enable(int id, bool estado) {

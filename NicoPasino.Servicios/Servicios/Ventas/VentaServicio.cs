@@ -3,6 +3,7 @@ using NicoPasino.Core.DTO.Ventas;
 using NicoPasino.Core.Errores;
 using NicoPasino.Core.Interfaces;
 using NicoPasino.Core.Modelos.Ventas;
+using System.Linq.Expressions;
 
 namespace NicoPasino.Servicios.Servicios.Ventas
 {
@@ -26,53 +27,78 @@ namespace NicoPasino.Servicios.Servicios.Ventas
         }
 
         public async Task<IEnumerable<VentaDto>> GetAll(bool activo) {
-            try {
-                var objsDb = await _repoG.ListarAsync(
-                    //filtro: m => m.Activo == activo
-                    orden: q => q.OrderByDescending(m => m.FechaVenta)
-                    , incluir: "IdClienteNavigation,Ventaporproducto,Ventaporproducto.IdProductoNavigation"
-                );
+            var objsDb = await _repoG.ListarAsync(
+                //filtro: m => m.Activo == activo
+                orden: q => q.OrderByDescending(m => m.FechaVenta)
+                , incluir: "IdClienteNavigation,Ventaporproducto,Ventaporproducto.IdProductoNavigation"
+            );
 
-                // si hay...
-                if (objsDb != null && objsDb.Any()) {
-                    var objsDto = objsDb.Adapt<IEnumerable<VentaDto>>();
-                    return objsDto;
-                }
-                return Enumerable.Empty<VentaDto>();
+            // si hay...
+            if (objsDb != null && objsDb.Any()) {
+                var objsDto = objsDb.Adapt<IEnumerable<VentaDto>>();
+                return objsDto;
             }
-            catch (Exception ex) {
-                throw new Exception(ex.Message);
-            }
+            else return Enumerable.Empty<VentaDto>();
         }
 
-        public async Task<IEnumerable<VentaDto>> GetAll(int idCliente) {
-            try {
-                //TODO: if (!ValidarCliente(DNICliente)) throw new ArgumentException("El DNI no es válido o no existe.");
+        public async Task<IEnumerable<VentaDto>> GetAll(string campo, string? valor) {
+            if (string.IsNullOrWhiteSpace(campo)) throw new ArgumentException("Campo de búsqueda no válido.");
+            campo = campo.Trim().ToLowerInvariant();
+            valor = valor?.Trim();
 
-                var objsDb = await _repoG.ListarAsync(
-                    filtro: m => (m.IdCliente == idCliente)
-                    , orden: q => q.OrderByDescending(m => m.FechaVenta)
-                    , incluir: "IdClienteNavigation,Ventaporproducto,Ventaporproducto.IdProductoNavigation"
-                );
+            Expression<Func<Venta, bool>> filtro = null;
+            Func<IQueryable<Venta>, IOrderedQueryable<Venta>> orden = null;
 
-                // si hay...
-                if (objsDb != null && objsDb.Any()) {
-                    var objsDto = objsDb.Adapt<IEnumerable<VentaDto>>();
-                    return objsDto;
-                }
+            bool valorIsNull = string.IsNullOrEmpty(valor);
+            var vLower = valorIsNull ? string.Empty : valor!.ToLowerInvariant();
 
-                return Enumerable.Empty<VentaDto>();
+            switch (campo) {
+                case "numero":
+                    orden = q => q.OrderBy(m => m.Numero);
+                    if (!valorIsNull) {
+                        filtro = m => m.Numero != null
+                                    && m.Numero.ToString().Contains(vLower);
+                    }
+                    break;
+
+                case "nombre":
+                case "nombredesc":
+                    orden = (campo == "nombre")
+                        ? new Func<IQueryable<Venta>, IOrderedQueryable<Venta>>(q => q.OrderBy(m => m.IdClienteNavigation.Nombre))
+                        : new Func<IQueryable<Venta>, IOrderedQueryable<Venta>>(q => q.OrderByDescending(m => m.IdClienteNavigation.Nombre));
+                    if (!valorIsNull) {
+                        filtro = m => m.IdClienteNavigation != null
+                                   && m.IdClienteNavigation.Nombre != null
+                                   && m.IdClienteNavigation.Nombre.ToLower().Contains(vLower);
+                    }
+                    break;
+
+                case "otro":
+                case "otrodesc":
+                    orden = (campo == "otro")
+                        ? new Func<IQueryable<Venta>, IOrderedQueryable<Venta>>(q => q.OrderBy(m => m.Detalle))
+                        : new Func<IQueryable<Venta>, IOrderedQueryable<Venta>>(q => q.OrderByDescending(m => m.Detalle));
+                    if (!valorIsNull) {
+                        filtro = m => m.Detalle != null
+                                    && m.Detalle.ToLower().Contains(vLower);
+                    }
+                    break;
+
+                default:
+                    throw new DataException($"Campo de búsqueda '{campo}' no soportado. Campos soportados: numero, nombre(Cliente), otro(Detalle).");
             }
-            catch (ArgumentException ex) {
-                throw new ArgumentException(ex.Message);
+
+            var objsDb = await _repoG.ListarAsync(filtro: filtro, incluir: "IdClienteNavigation,Ventaporproducto,Ventaporproducto.IdProductoNavigation", orden: orden);
+
+            if (objsDb != null && objsDb.Any()) {
+                var objsDto = objsDb.Adapt<IEnumerable<VentaDto>>();
+                return objsDto;
             }
-            catch (Exception ex) {
-                throw new Exception(ex.Message);
-            }
+            else return Enumerable.Empty<VentaDto>();
         }
 
         public async Task<VentaDto> GetById(int id) {
-            if (id <= 0) throw new ArgumentException("Numero de venta no válido"); // TODO: comprobar si existe Nro
+            if (id <= 0) throw new DataException("Numero de venta no válido"); // TODO: comprobar si existe Nro
             var objDb = await _repoG.GetAsync(
                 filtro: m => m.Id == id
                 , incluir: "IdClienteNavigation,Ventaporproducto,Ventaporproducto.IdProductoNavigation"
@@ -82,8 +108,7 @@ namespace NicoPasino.Servicios.Servicios.Ventas
                 var objDto = objDb.Adapt<VentaDto>();
                 return objDto;
             }
-
-            return new VentaDto();
+            else return new VentaDto();
         }
 
         public async Task<bool> Create(VentaDto obj) {
@@ -162,10 +187,6 @@ namespace NicoPasino.Servicios.Servicios.Ventas
                 }
             }
             return true;
-        }
-
-        public Task<IEnumerable<VentaDto>> GetAll(string Busqueda) {
-            throw new NotImplementedException();
         }
 
         public Task<bool> Update(VentaDto obj) {

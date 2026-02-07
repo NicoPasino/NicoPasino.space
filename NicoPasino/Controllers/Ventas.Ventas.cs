@@ -8,15 +8,39 @@ namespace NicoPasino.Controllers
     {
         [HttpGet("Ventas")]
         public async Task<ActionResult> GetAllVentas() {
-            var objs = await _ventaServicio.GetAll(true);
-            return Ok(objs);
+            try {
+                var objs = await _ventaServicio.GetAll(true);
+                return Ok(objs);
+            }
+            catch (Exception ex) {
+                return new ObjectResult("Error de servidor: StatusCode 500") { StatusCode = 500 };
+            }
+        }
+
+        [HttpGet("Ventas/search/{campo}/{valor?}")]
+        public async Task<ActionResult> GetAllVentas(string campo, string? valor) {
+            try {
+                var objs = await _ventaServicio.GetAll(campo, valor);
+                return Ok(objs);
+            }
+            catch (DataException ex) {
+                return BadRequest(new { message = ex.Message }); // 400
+            }
+            catch (Exception ex) {
+                return new ObjectResult("Error de servidor: StatusCode 500") { StatusCode = 500 };
+            }
         }
 
         [HttpGet("Ventas/{id}")]
         public async Task<ActionResult> GetVenta(int id) {
-            var obj = await _ventaServicio.GetById(id);
-            return Ok(obj);
-            // return NotFound(new { mensaje = "Producto no encontrado" }); // 404
+            try {
+                var obj = await _ventaServicio.GetById(id);
+                return Ok(obj);
+                // return NotFound(new { mensaje = "Producto no encontrado" }); // 404
+            }
+            catch (Exception ex) {
+                return new ObjectResult("Error de servidor: StatusCode 500") { StatusCode = 500 };
+            }
         }
 
         [HttpPost("Ventas")]
@@ -38,8 +62,13 @@ namespace NicoPasino.Controllers
 
         [HttpDelete("Ventas/{id}")]
         public async Task<IActionResult> EliminarVenta(int id) {
-            var res = await _ventaServicio.Enable(id, false);
-            return Ok(new { success = true });
+            try {
+                var res = await _ventaServicio.Enable(id, false);
+                return Ok(new { success = true });
+            }
+            catch (Exception ex) {
+                return new ObjectResult("Error de servidor: StatusCode 500") { StatusCode = 500 };
+            }
         }
 
 

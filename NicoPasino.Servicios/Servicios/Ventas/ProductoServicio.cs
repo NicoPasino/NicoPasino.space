@@ -3,7 +3,7 @@ using NicoPasino.Core.DTO.Ventas;
 using NicoPasino.Core.Errores;
 using NicoPasino.Core.Interfaces;
 using NicoPasino.Core.Modelos.Ventas;
-
+using System.Linq.Expressions;
 
 namespace NicoPasino.Servicios.Servicios.Ventas
 {
@@ -34,60 +34,67 @@ namespace NicoPasino.Servicios.Servicios.Ventas
             }
         }
 
-        public async Task<IEnumerable<ProductoDto>> GetAll(string nombre) {
-            if (nombre == null) throw new ArgumentException("Texto vacío o no válido.");
-            // TODO: otras validaciones
+        public async Task<IEnumerable<ProductoDto>> GetAll(string campo, string? valor) {
+            if (string.IsNullOrWhiteSpace(campo)) throw new ArgumentException("Campo de búsqueda no válido.");
+            campo = campo.Trim().ToLowerInvariant();
+            valor = valor?.Trim();
 
-            try {
-                nombre = nombre.Trim();
-                nombre = nombre.Length > 30 ? nombre = nombre.Substring(0, 30) : nombre;
+            Expression<Func<Producto, bool>> filtro = null;
+            Func<IQueryable<Producto>, IOrderedQueryable<Producto>> orden = null;
 
-                var objsDb = await _repoG.ListarAsync(
-                    filtro: m => m.Activo && (string.IsNullOrEmpty(nombre) || m.Nombre.Contains(nombre))
-                    //orden: q => q.OrderByDescending(m => m.FechaCreacion)
-                    , incluir: "IdCategoriaNavigation"
-                );
+            bool valorIsNull = string.IsNullOrEmpty(valor);
+            var vLower = valorIsNull ? string.Empty : valor!.ToLowerInvariant();
 
-                // si hay...
-                if (objsDb != null && objsDb.Any()) {
-                    var objsDto = objsDb.Adapt<IEnumerable<ProductoDto>>();
-                    return objsDto;
-                }
-                return Enumerable.Empty<ProductoDto>();
+            switch (campo) {
+                case "numero":
+                    orden = q => q.OrderBy(m => m.Id);
+                    if (!valorIsNull) {
+                        filtro = m => m.Activo
+                                    && m.IdPublica != null
+                                    && m.IdPublica.ToString().Contains(vLower);
+                    }
+                    break;
+
+                case "nombre":
+                case "nombredesc":
+                    orden = (campo == "nombre")
+                        ? new Func<IQueryable<Producto>, IOrderedQueryable<Producto>>(q => q.OrderBy(m => m.Nombre))
+                        : new Func<IQueryable<Producto>, IOrderedQueryable<Producto>>(q => q.OrderByDescending(m => m.Nombre));
+                    if (!valorIsNull) {
+                        filtro = m => m.Activo
+                                    && m.Nombre != null
+                                    && m.Nombre.ToLower().Contains(vLower);
+                    }
+                    break;
+
+                case "otro":
+                case "otrodesc":
+                    orden = (campo == "otro")
+                        ? new Func<IQueryable<Producto>, IOrderedQueryable<Producto>>(q => q.OrderBy(m => m.IdCategoriaNavigation.Nombre))
+                        : new Func<IQueryable<Producto>, IOrderedQueryable<Producto>>(q => q.OrderByDescending(m => m.IdCategoriaNavigation.Nombre));
+                    if (!valorIsNull) {
+                        filtro = m => m.Activo
+                                    && m.IdCategoriaNavigation != null
+                                    && m.IdCategoriaNavigation.Nombre != null
+                                    && m.IdCategoriaNavigation.Nombre.ToLower().Contains(vLower);
+                    }
+                    break;
+
+                default:
+                    throw new DataException($"Campo de búsqueda '{campo}' no soportado. Campos soportados: numero, nombre, otro(Nombre Categoría).");
             }
-            catch (Exception ex) {
-                throw new Exception();
-            }
-        }
 
-        public async Task<IEnumerable<ProductoDto>> GetAll(int idCategoria) {
-            try {
-                //if (!ValidarCategoria(idCategoria)) throw new ArgumentException("El ID de la Categoría no es válido.");
+            var objsDb = await _repoG.ListarAsync(filtro: filtro, incluir: "IdCategoriaNavigation", orden: orden);
 
-                var objsDb = await _repoG.ListarAsync(
-                    filtro: m => m.Activo && (m.IdCategoriaNavigation != null && m.IdCategoriaNavigation.Id == idCategoria)
-                    //orden: q => q.OrderByDescending(m => m.FechaCreacion)
-                    , incluir: "IdCategoriaNavigation"
-                );
-
-                // si hay...
-                if (objsDb != null && objsDb.Any()) {
-                    var objsDto = objsDb.Adapt<IEnumerable<ProductoDto>>();
-                    return objsDto;
-                }
-
-                return Enumerable.Empty<ProductoDto>();
+            if (objsDb != null && objsDb.Any()) {
+                var objsDto = objsDb.Adapt<IEnumerable<ProductoDto>>();
+                return objsDto;
             }
-            catch (ArgumentException ex) {
-                throw new ArgumentException(ex.Message);
-            }
-            catch (Exception ex) {
-                throw new Exception();
-            }
+            else return Enumerable.Empty<ProductoDto>();
         }
 
         public async Task<ProductoDto> GetById(int id) {
-            if (id <= 0) throw new ArgumentException("Id no válido");
+            if (id <= 0) throw new DataException("Id no válido");
             var objDb = await _repoG.GetAsync(
                 filtro: m => m.IdPublica == id
                 , incluir: "IdCategoriaNavigation"
@@ -97,7 +104,7 @@ namespace NicoPasino.Servicios.Servicios.Ventas
                 var objDto = objDb.Adapt<ProductoDto>();
                 return objDto;
             }
-            return new ProductoDto();
+            else return new ProductoDto();
         }
 
         public async Task<bool> Create(ProductoDto obj) {
@@ -153,7 +160,7 @@ namespace NicoPasino.Servicios.Servicios.Ventas
         }
 
         public async Task<bool> Enable(int id, bool estado) {
-            if (id <= 0) throw new ArgumentException("Id no válido");
+            if (id <= 0) throw new DataException("Id no válido");
             var objDb = await _repoG.GetAsync(filtro: m => m.IdPublica == id);
 
             if (objDb != null) {
@@ -164,7 +171,7 @@ namespace NicoPasino.Servicios.Servicios.Ventas
                 //await _uow.SaveChangesAsync();
                 return true;
             }
-            else throw new ArgumentException("Id no válido");
+            else throw new DataException("Id no válido");
         }
 
         /// <summary> Return bool. </summary>

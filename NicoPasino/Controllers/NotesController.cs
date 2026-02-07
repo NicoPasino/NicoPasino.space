@@ -17,15 +17,39 @@ namespace NicoPasino.Controllers
 
         [HttpGet]
         public async Task<ActionResult> GetAll() {
-            var objs = await _notasServicio.GetAll(true);
-            return Ok(objs);
+            try {
+                var objs = await _notasServicio.GetAll(true);
+                return Ok(objs);
+            }
+            catch (Exception ex) {
+                return new ObjectResult("Error de servidor: StatusCode 500") { StatusCode = 500 };
+            }
+        }
+
+        [HttpGet("search/{campo}/{valor?}")]
+        public async Task<ActionResult> GetAll(string campo, string? valor) {
+            try {
+                var objs = await _notasServicio.GetAll(campo, valor);
+                return Ok(objs);
+            }
+            catch (DataException ex) {
+                return BadRequest(new { message = ex.Message }); // 400
+            }
+            catch (Exception ex) {
+                return new ObjectResult("Error de servidor: StatusCode 500") { StatusCode = 500 };
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult> Get(int id) {
-            var obj = await _notasServicio.GetById(id);
-            if (obj?.Id != null) return Ok(obj);
-            else return NotFound(new { message = "Elemento no encontrado" }); // 404
+            try {
+                var obj = await _notasServicio.GetById(id);
+                if (obj?.Id != null) return Ok(obj);
+                else return NotFound(new { message = "Elemento no encontrado" }); // 404
+            }
+            catch (Exception ex) {
+                return new ObjectResult("Error de servidor: StatusCode 500") { StatusCode = 500 };
+            }
         }
 
         [HttpPost]
@@ -64,9 +88,14 @@ namespace NicoPasino.Controllers
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(int id) {
-            var res = await _notasServicio.Enable(id, false);
-            if (res) return Ok();
-            else return new ObjectResult("Error de servidor: StatusCode 500. ") { StatusCode = 500 };
+            try {
+                var res = await _notasServicio.Enable(id, false);
+                if (res) return Ok();
+                else return new ObjectResult("Error de servidor: StatusCode 500. ") { StatusCode = 500 };
+            }
+            catch (Exception ex) {
+                return new ObjectResult("Error de servidor: StatusCode 500") { StatusCode = 500 };
+            }
         }
     }
 }
