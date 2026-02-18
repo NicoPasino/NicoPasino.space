@@ -31,6 +31,7 @@ namespace NicoPasino.Infra.Repositorio
         public async Task AddRange(IEnumerable<T> entities) {
             await _dbSet.AddRangeAsync(entities);
             await _context.SaveChangesAsync();
+            return;
         }
 
         public async Task<int> Update(T entity) {
@@ -41,18 +42,20 @@ namespace NicoPasino.Infra.Repositorio
         public async Task Delete(T entity) {
             _dbSet.Remove(entity);
             await _context.SaveChangesAsync();
+            return;
         }
 
         public async Task DeleteRange(IEnumerable<T> entities) {
             _dbSet.RemoveRange(entities);
             await _context.SaveChangesAsync();
+            return;
         }
 
         public async Task<T> GetAsync(Expression<Func<T, bool>>? filtro = null, string incluir = "") {
             IQueryable<T> query = _dbSet;
 
             if (filtro != null)
-                query = query.Where(filtro);
+                query = query.Where(filtro).AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(incluir)) {
                 foreach (var inc in incluir.Split(',', StringSplitOptions.RemoveEmptyEntries)) {

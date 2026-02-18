@@ -129,17 +129,23 @@ namespace NicoPasino.Servicios.Servicios.Notas
             if (obj == null) throw new DataException("No se recibió ningún dato.");
             // TODO: otras validaciones
 
+            var objDb = await _repoG.GetAsync(filtro: x => x.IdPublica == obj.Id);
+            if (objDb == null) throw new DataException("Objeto original no encontrado.");
+
             var objeto = obj.Adapt<Cards>();
 
             var tiempoActual = DateHelper.GetDate();
-
+            objeto.Id = objDb.Id;
+            objeto.IdPublica = obj.Id;
             objeto.Fecha = tiempoActual.fecha;
             objeto.Hora = tiempoActual.hora;
 
-            var res = await _repoG.Update(objeto);
+            Cards objetoRdy = objeto.Adapt<Cards>();
 
-            return (res != null);
-            //return true;
+            var res = await _repoG.Update(objetoRdy);
+
+            if (res > 0) return true;
+            else throw new UpdateException("No se pudo actualizar en la base de datos.");
         }
 
         public async Task<bool> Enable(int id, bool estado) {
