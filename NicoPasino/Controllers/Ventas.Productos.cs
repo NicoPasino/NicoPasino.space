@@ -94,5 +94,35 @@ namespace NicoPasino.Controllers
                 return new ObjectResult("Error de servidor: StatusCode 500") { StatusCode = 500 };
             }
         }
+
+        // -------------------------------------------
+        // ------------ Categorías -------------------
+        // -------------------------------------------
+
+        [HttpGet("Categorias")]
+        public async Task<ActionResult> GetAllCategorias() {
+            try {
+                var objs = await _categoriaServicio.GetAll(true);
+                return Ok(objs);
+            }
+            catch (Exception ex) {
+                return new ObjectResult("Error de servidor: StatusCode 500") { StatusCode = 500 };
+            }
+        }
+
+        [HttpGet("Categorias/{id}")]
+        public async Task<ActionResult> GetCategoria(int id) {
+            try {
+                var obj = await _productoServicio.GetById(id);
+                if (obj?.IdPublica != null) return Ok(obj);
+                else return NotFound(new { message = "Categoría no encontrada" }); // 404
+            }
+            catch (DataException ex) {
+                return BadRequest(new { message = ex.Message }); // 400
+            }
+            catch (Exception ex) {
+                return new ObjectResult("Error de servidor: StatusCode 500") { StatusCode = 500 };
+            }
+        }
     }
 }
