@@ -3,6 +3,7 @@ using NicoPasino.Core.DTO.Ventas;
 using NicoPasino.Core.Errores;
 using NicoPasino.Core.Interfaces;
 using NicoPasino.Core.Modelos.Ventas;
+using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 
 namespace NicoPasino.Servicios.Servicios.Ventas
@@ -133,10 +134,12 @@ namespace NicoPasino.Servicios.Servicios.Ventas
 
         private void ValidarDatos(ClienteDto obj) {
             if (obj == null) throw new DataException("No se recibió ningún dato.");
-            if (obj.Documento <= 9999999 || obj.Documento > 999999999) throw new DataException("Documento no válido.");
-            if (obj.Nombre == null || obj.Nombre.Trim().Length <= 3) throw new DataException("Nombre no válido.");
-            if (obj.Correo == null || obj.Correo.Trim().Length <= 8) throw new DataException("Correo no válido.");
-            // TODO: otras validaciones + expresiones regulares
+            if (obj.Documento < 10000000 || obj.Documento > 99999999) throw new DataException("Documento no válido.");
+            if (string.IsNullOrWhiteSpace(obj.Nombre) || obj.Nombre.Trim().Length < 4) throw new DataException("Nombre no válido.");
+            if (string.IsNullOrWhiteSpace(obj.Correo) || obj.Correo.Trim().Length < 5)
+                throw new DataException("Correo no válido.");
+            if (!new EmailAddressAttribute().IsValid(obj.Correo.Trim()))
+                throw new DataException("Correo no válido.");
         }
 
 

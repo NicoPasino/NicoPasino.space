@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using NicoPasino.Models;
 using System.Diagnostics;
 
 namespace NicoPasino.Controllers
 {
+    [EnableRateLimiting("general")]
     public class HomeController : Controller
     {
         public async Task<IActionResult> Index() {
@@ -20,11 +22,19 @@ namespace NicoPasino.Controllers
         [HttpGet("Home/NotFound")]
         public IActionResult NotFound(int statusCode) { // , string? mensaje, string? controlador
             ViewData["StatusCode"] = statusCode;
-            ViewData["Title"] = "Página No Encontrada";
+            ViewData["Title"] = "Pï¿½gina No Encontrada";
             //ViewData["Controlador"] = controlador;
             //ViewData["Mensaje"] = mensaje;
 
             return View();
+        }
+
+        [HttpPut("")]
+        [HttpPost("")]
+        [HttpPatch("")]
+        [HttpDelete("")]
+        public IActionResult Post() {
+            return StatusCode(405);
         }
     }
 }

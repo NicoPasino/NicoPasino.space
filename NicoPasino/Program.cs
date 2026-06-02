@@ -1,4 +1,5 @@
 using dotenv.net;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using NicoPasino.Core.DTO.Notas;
 using NicoPasino.Core.DTO.Ventas;
@@ -11,6 +12,7 @@ using NicoPasino.Infra.Repositorio;
 using NicoPasino.Servicios.Servicios.Movies;
 using NicoPasino.Servicios.Servicios.Notas;
 using NicoPasino.Servicios.Servicios.Ventas;
+using System.Threading.RateLimiting;
 
 namespace NicoPasino
 {
@@ -18,6 +20,9 @@ namespace NicoPasino
     {
         public static void Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);
+
+            // Forzar a que escuche en todas las interfaces en el puerto 5000
+            //builder.WebHost.UseUrls("https://0.0.0.0:5000"); // TODO: DESACTIVARRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
 
             DotEnv.Load(); // leer .env
 
@@ -34,26 +39,26 @@ namespace NicoPasino
             MappingConfig.VentasMappings();
             MappingConfig.NotasMappings();
 
-            // conexión a películas
+            // conexiï¿½n a pelï¿½culas
             var moviesdb = Environment.GetEnvironmentVariable("movies");
             builder.Services.AddDbContext<moviesdbContext>(options =>
                 options.UseMySql(moviesdb, new MySqlServerVersion(new Version(8, 0, 39)))
             );
 
-            // conexión a ventas
+            // conexiï¿½n a ventas
             var ventasdb = Environment.GetEnvironmentVariable("ventas");
             builder.Services.AddDbContext<ventasdbContext>(options =>
                 options.UseMySql(ventasdb, new MySqlServerVersion(new Version(8, 0, 39)))
             );
 
-            // conexión a notas
+            // conexiï¿½n a notas
             var notasdb = Environment.GetEnvironmentVariable("notas");
             builder.Services.AddDbContext<notasdbContext>(options =>
                 options.UseMySql(notasdb, new MySqlServerVersion(new Version(8, 0, 39))) // version de aws?
             );
 
 
-            // permitir inyección (Repositorio => conexión con dbContext)
+            // permitir inyecciï¿½n (Repositorio => conexiï¿½n con dbContext)
             builder.Services.AddScoped<IUnitOfWorkMovie, UnitOfWorkMovie>();
             builder.Services.AddScoped(typeof(IRepositorioGenerico<>), typeof(RepositorioGenericoMovies<>));
             builder.Services.AddScoped(typeof(IRepositorioGenericoVentas<>), typeof(RepositorioGenericoVentas<>));
@@ -70,16 +75,37 @@ namespace NicoPasino
 
             builder.Services.AddScoped<IServicioGenerico<Cards, CardsDto>, NotasServicio>();
 
-            // cambiar texto de validación de la vista
+            // cambiar texto de validaciï¿½n de la vista
             builder.Services.AddRazorPages()
             .AddMvcOptions(options => {
                 options.ModelBindingMessageProvider.SetValueMustNotBeNullAccessor(
                     _ => "El campo es requerido.");
             });
 
+            builder.Services.AddHsts(options => {
+                options.Preload = true;
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(365);
+            });
+
+            builder.Services.AddRateLimiter(options => {
+                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                options.AddPolicy("general", httpContext =>
+                    RateLimitPartition.GetFixedWindowLimiter(
+                        partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                        factory: _ => new FixedWindowRateLimiterOptions {
+                            PermitLimit = 100,
+                            Window = TimeSpan.FromMinutes(1),
+                            QueueLimit = 0,
+                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst
+                        }
+                    )
+                );
+            });
+
             var app = builder.Build();
 
-            // crear una base de datos a través de una migración
+            // crear una base de datos a travï¿½s de una migraciï¿½n
             /*using (var scope = app.Services.CreateScope()) {
                 var context = scope.ServiceProvider.GetRequiredService<moviesdbContext>();
                 context.Database.Migrate();
@@ -87,11 +113,17 @@ namespace NicoPasino
 
 
             app.Use(async (context, next) => {
-                context.Response.Headers.Append("X-Robots-Tag", "noindex, nofollow");
+                var h = context.Response.Headers;
+                h["X-Content-Type-Options"] = "nosniff";
+                h["X-Frame-Options"] = "DENY";
+                h["Referrer-Policy"] = "strict-origin-when-cross-origin";
+                h["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()";
+                h["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https://nicopasino.space https://*.nicopasino.space http://localhost:* http://127.0.0.1:*; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'";
+                h["X-Robots-Tag"] = "noindex, nofollow";
                 await next();
             });
 
-            // Middleware para manejar códigos de estado: (re-ejecuta la petición internamente)
+            // Middleware para manejar cÃ³digos de estado: (re-ejecuta la peticiÃ³n internamente)
             app.UseStatusCodePagesWithReExecute("/Home/NotFound", "?statusCode={0}");
 
             // Middleware para Error 500
@@ -102,8 +134,9 @@ namespace NicoPasino
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseRateLimiter();
 
-            // Aplicar la política de CORS
+            // Aplicar la polÃ­tica de CORS
             app.UseCors(misReglasCORS);
 
             app.UseAuthorization();
