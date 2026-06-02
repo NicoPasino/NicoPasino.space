@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using NicoPasino.Core.DTO.Movies;
 using NicoPasino.Core.Errores.Movies;
 using NicoPasino.Core.Interfaces;
 
 namespace NicoPasino.Controllers
 {
+    [EnableRateLimiting("general")]
     public class MoviesController : Controller
     {
         private readonly IMovieServicio _servicio;

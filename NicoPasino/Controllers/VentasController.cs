@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using NicoPasino.Core.DTO.Ventas;
 using NicoPasino.Core.Interfaces;
 using NicoPasino.Core.Modelos.Ventas;
 
 namespace NicoPasino.Controllers
 {
-    [Route("api/[controller]")] // Definir la ruta base para todo el controlador
+    [Route("api/[controller]")]
     [ApiController]
+    [EnableRateLimiting("general")]
     public partial class VentasController : ControllerBase
     {
         private readonly IServicioGenerico<Producto, ProductoDto> _productoServicio;

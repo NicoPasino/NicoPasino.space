@@ -70,7 +70,7 @@ namespace NicoPasino.Infra.Repositorio
             IQueryable<T> query = _dbSet;
 
             if (filtro != null)
-                query = query.Where(filtro);
+                query = query.Where(filtro).AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(incluir)) {
                 foreach (var inc in incluir.Split(',', StringSplitOptions.RemoveEmptyEntries)) {

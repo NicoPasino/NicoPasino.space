@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Inicio";
+    var dominio = "nicopasino.space";
 }
 
 <link rel="stylesheet" href="~/css/IndexPortafolio.css" />
@@ -43,7 +44,7 @@
 <!-- Proyectos -->
 <section class="projects">
 
-    <div class="card" onclick="window.location = 'https://sistema-ventas.nicopasino.space'">
+    <div class="card" onclick="window.location = 'https://sistema-ventas.@dominio'">
         <div class="cardHeader">
             <p class="cardTitle"> Sistema de Ventas </p>
             <div class="cardIcons">
@@ -55,19 +56,7 @@
         <p class="cardText"> Gestiona tus productos y ventas a otro nivel.</p>
     </div>
 
-    <div class="card" onclick="window.location = 'https://nicopasino.space/movies'">
-        <div class="cardHeader">
-            <p class="cardTitle"> Películas </p>
-            <div class="cardIcons">
-                <!-- <img class="small" src="~/imgs/icons/Nodejs.svg" alt="Node.js" title="Node.js"> -->
-                <img class="small" src="~/imgs/icons/NET.svg" alt=".NET" title="ASP.NET Core MVC">
-                <img class="small" src="~/imgs/icons/mysql.svg" alt="MySQL" title="MySQL">
-            </div>
-        </div>
-        <p class="cardText"> Explora el cine del cosmos sin necesidad de un telescopio.</p>
-    </div>
-
-    <div class="card" onclick="window.location = 'https://notas.nicopasino.space'">
+    <div class="card" onclick="window.location = 'https://notas.@dominio'">
         <div class="cardHeader">
             <p class="cardTitle"> Notas </p>
             <div class="cardIcons">
@@ -78,6 +67,18 @@
             </div>
         </div>
         <p class="cardText"> Tus ideas en órbita, siempre al alcance.</p>
+    </div>
+
+    <div class="card" onclick="window.location = 'https://@dominio/movies'">
+        <div class="cardHeader">
+            <p class="cardTitle"> Películas </p>
+            <div class="cardIcons">
+                <!-- <img class="small" src="~/imgs/icons/Nodejs.svg" alt="Node.js" title="Node.js"> -->
+                <img class="small" src="~/imgs/icons/NET.svg" alt=".NET" title="ASP.NET Core MVC">
+                <img class="small" src="~/imgs/icons/mysql.svg" alt="MySQL" title="MySQL">
+            </div>
+        </div>
+        <p class="cardText"> Explora el cine del cosmos sin necesidad de un telescopio.</p>
     </div>
 </section>
 

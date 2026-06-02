@@ -1,4 +1,6 @@
-﻿namespace NicoPasino.Core.DTO.Ventas
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace NicoPasino.Core.DTO.Ventas
 {
     public class VentaDto
     {
@@ -6,33 +8,29 @@
 
         public int? Numero { get; set; }
 
+        [StringLength(500, ErrorMessage = "El detalle no puede tener más de 500 caracteres.")]
         public string? Detalle { get; set; }
 
         public int IdCliente { get; set; }
 
-        //public decimal PrecioTotal { get; set; } // TODO: eliminar
-
         public DateTime? FechaVenta { get; set; }
 
-        //public virtual Cliente? IdClienteNavigation { get; set; }
+        public string? Cliente { get; set; }
 
-        //public virtual ICollection<Ventaporproducto>? Ventaporproducto { get; set; }
-
-
-
-        /* ---- propiedades calculadas ---- */
-
-        public string? Cliente { get; set; } // (solo para mostrar)
-
-
-        // (para Venta Nueva)
-        // Nota: no exportar porque solo recibe VentaDto (servicio genérico)
+        [Required(ErrorMessage = "El DNI es requerido.")]
+        [Range(10000000, 99999999, ErrorMessage = "El DNI debe tener 8 dígitos.")]
         public int? DNI { get; set; }
-        public string? Nombre { get; set; }
-        public IEnumerable<int>? ItemsId { get; set; }
-        public IEnumerable<int>? ItemsCant { get; set; }
 
-        //public ICollection<Ventaporproducto>? VentaPorProducto { get; set; } // Dto para evitar bucle
+        [StringLength(100, MinimumLength = 4, ErrorMessage = "El nombre debe tener entre 4 y 100 caracteres.")]
+        public string? Nombre { get; set; }
+
+        [Required(ErrorMessage = "Los items son requeridos.")]
+        [MinLength(1, ErrorMessage = "Debe haber al menos un item.")]
+        public IEnumerable<int>? ItemsId { get; set; }
+
+        [Required(ErrorMessage = "Las cantidades son requeridas.")]
+        [MinLength(1, ErrorMessage = "Debe haber al menos una cantidad.")]
+        public IEnumerable<int>? ItemsCant { get; set; }
 
         public IEnumerable<VentaporproductoDto>? Productos { get; set; }
     }
